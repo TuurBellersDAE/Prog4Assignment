@@ -1,39 +1,26 @@
 #pragma once
 #include <chrono>
 
-namespace dae
+class Timer
 {
-	class Timer
-	{
-	public:
-		static Timer& GetInstance()
-		{
-			static Timer instance;
-			return instance;
-		}
+public:
+    static Timer& GetInstance()
+    {
+        static Timer instance;
+        return instance;
+    }
 
-		void Start()
-		{
-			m_lastTime = std::chrono::high_resolution_clock::now();
-		}
+    void Update()
+    {
+        const auto currentTime = std::chrono::high_resolution_clock::now();
+        m_DeltaTime = std::chrono::duration<float>(currentTime - m_LastTime).count();
+        m_LastTime = currentTime;
+    }
 
-		void Update()
-		{
-			auto currentTime = std::chrono::high_resolution_clock::now();
-			m_deltaTime = std::chrono::duration<float>(currentTime - m_lastTime).count();
-			m_lastTime = currentTime;
-		}
+    float GetDeltaTime() const { return m_DeltaTime; }
 
-		float GetDeltaTime() const { return m_deltaTime; }
-
-	private:
-		Timer() : m_deltaTime(0.0f) {}
-		~Timer() = default;
-
-		Timer(const Timer&) = delete;
-		Timer& operator=(const Timer&) = delete;
-
-		std::chrono::high_resolution_clock::time_point m_lastTime;
-		float m_deltaTime;
-	};
-}
+private:
+    Timer() : m_LastTime(std::chrono::high_resolution_clock::now()), m_DeltaTime(0.0f) {}
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_LastTime;
+    float m_DeltaTime;
+};

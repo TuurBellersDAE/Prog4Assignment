@@ -88,26 +88,27 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& input = InputManager::GetInstance();
 	auto& timer = Timer::GetInstance();
 
-	//timer.Start();
+	const int targetFPS = 240;
+	const auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
 
-	// todo: this update loop could use some work.
 	bool doContinue = true;
-	auto lastTime = std::chrono::high_resolution_clock::now();
 	while (doContinue)
 	{
-		const auto currentTime = std::chrono::high_resolution_clock::now();
-		// const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-		lastTime = currentTime;
+		const auto frameStartTime = std::chrono::high_resolution_clock::now();
 
 		timer.Update();
-		std::cout << "DeltaTime: " << timer.GetDeltaTime() << std::endl;
+		//std::cout << "DeltaTime: " << timer.GetDeltaTime() << std::endl;
 
 		doContinue = input.ProcessInput();
 		sceneManager.Update();
 		renderer.Render();
 
-		const auto sleepTime = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now();
+		const auto frameEndTime = std::chrono::high_resolution_clock::now();
+		const auto frameTime = frameEndTime - frameStartTime;
 
-		std::this_thread::sleep_for(sleepTime);
+		if (frameTime < frameDuration)
+		{
+			std::this_thread::sleep_for(frameDuration - frameTime);
+		}
 	}
 }
