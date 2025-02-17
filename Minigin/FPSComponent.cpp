@@ -7,6 +7,7 @@ dae::FPSComponent::FPSComponent()
 	: m_FPS(0)
 	, m_FrameCount(0)
 	, m_LastTime(std::chrono::high_resolution_clock::now())
+	, m_TextComponent(nullptr)
 {
 }
 
@@ -39,7 +40,7 @@ void dae::FPSComponent::Update()
 		}
 	}
 
-	//std::cout << "FPS: " << m_FPS << std::endl;
+	std::cout << "FPS: " << m_FPS << std::endl;
 }
 
 std::string dae::FPSComponent::GetStringFPS() const

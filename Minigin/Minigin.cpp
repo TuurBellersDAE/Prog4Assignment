@@ -88,7 +88,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& input = InputManager::GetInstance();
 	auto& timer = Timer::GetInstance();
 
-	const int targetFPS = 240;
+	const int targetFPS = 60;
 	const auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
 
 	bool doContinue = true;
