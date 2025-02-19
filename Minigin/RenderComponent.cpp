@@ -2,8 +2,8 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
-dae::RenderComponent::RenderComponent(const std::string& filename, glm::vec3 position)
-	: m_needsUpdate(true), m_Texture(nullptr), m_Position(position)
+dae::RenderComponent::RenderComponent(GameObject* pOwner, const std::string& filename, glm::vec3 position)
+	: Component(pOwner), m_needsUpdate(true), m_Texture(nullptr), m_Position(position)
 {
 	SetTexture(filename);
 }

@@ -5,8 +5,13 @@
 #include "Font.h"
 #include "Texture2D.h"
 
-dae::TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font, glm::vec3 position)
-	: m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), m_Position(position), m_TextTexture(nullptr)
+//dae::TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font, glm::vec3 position)
+//	: m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), m_Position(position), m_TextTexture(nullptr)
+//{
+//}
+
+dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, glm::vec3 position)
+	: Component(pOwner), m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), m_Position(position), m_TextTexture(nullptr)
 {
 }
 

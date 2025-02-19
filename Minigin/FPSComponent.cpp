@@ -3,8 +3,9 @@
 #include "TextComponent.h"
 #include "Timer.h"
 
-dae::FPSComponent::FPSComponent()
-	: m_FPS(0)
+dae::FPSComponent::FPSComponent(GameObject* pOwner)
+	: Component(pOwner)
+	, m_FPS(0)
 	, m_FrameCount(0)
 	, m_LastTime(std::chrono::high_resolution_clock::now())
 	, m_TextComponent(nullptr)
@@ -34,9 +35,14 @@ void dae::FPSComponent::Update()
 		}
 		m_FPS = sumFPS / m_FPSBuffer.size();
 
+		if (!m_TextComponent)
+		{
+			m_TextComponent = GetOwner()->GetComponent<TextComponent>();
+		}
+
 		if (m_TextComponent)
 		{
-			m_TextComponent->SetText(GetStringFPS());
+			m_TextComponent->SetText("FPS: " + GetStringFPS());
 		}
 	}
 

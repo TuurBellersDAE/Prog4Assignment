@@ -10,14 +10,12 @@ namespace dae
 {
 	class Component;
 
-	// todo: this should become final.
 	class GameObject final
 	{
 	public:
 		void Update();
 		void Render() const;
 
-		//void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 
 		GameObject() = default;
@@ -26,7 +24,6 @@ namespace dae
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
-
 
 		template <typename T, typename... Args>
 		T& AddComponent(Args&&... args);
@@ -42,14 +39,8 @@ namespace dae
 
 	private:
 		Transform m_transform{};
-
-		// todo: mmm, every gameobject has a texture? Is that correct?
-		//std::shared_ptr<Texture2D> m_texture{};
-
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components;
-
 	};
-
 
 	template <typename T, typename... Args>
 	T& GameObject::AddComponent(Args&&... args)
@@ -60,8 +51,7 @@ namespace dae
 			throw std::runtime_error("Component already exists.");
 		}
 
-		auto component = std::make_unique<T>(std::forward<Args>(args)...);
-		//component->SetOwner(this);
+		auto component = std::make_unique<T>(this, std::forward<Args>(args)...);
 		T& ref = *component;
 		m_Components[typeIndex] = std::move(component);
 		return ref;

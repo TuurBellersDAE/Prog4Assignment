@@ -11,7 +11,7 @@ namespace dae
 	class RenderComponent : public Component
 	{
 	public:
-		RenderComponent(const std::string& filename, glm::vec3 position);
+		RenderComponent(GameObject* pOwner, const std::string& filename, glm::vec3 position);
 		~RenderComponent() = default;
 		RenderComponent(const RenderComponent& other) = delete;
 		RenderComponent(RenderComponent&& other) = delete;

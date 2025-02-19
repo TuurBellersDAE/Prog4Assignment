@@ -6,12 +6,13 @@
 
 namespace dae
 {
+	class GameObject;
 	class TextComponent;
-
+	
 	class FPSComponent : public Component
 	{
 	public:
-		FPSComponent();
+		FPSComponent(GameObject* pOwner);
 		~FPSComponent() = default;
 		FPSComponent(const FPSComponent& other) = delete;
 		FPSComponent(FPSComponent&& other) = delete;

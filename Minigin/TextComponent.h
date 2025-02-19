@@ -12,7 +12,8 @@ namespace dae
 	class TextComponent : public Component
 	{
 	public:
-		TextComponent(const std::string& text, std::shared_ptr<Font> font, glm::vec3 position);
+		TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, glm::vec3 position);
+		//TextComponent(const std::string& text, std::shared_ptr<Font> font, glm::vec3 position);
 		~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
