@@ -1,12 +1,15 @@
 #include "FPSComponent.h"
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "TextComponent.h"
 #include "Timer.h"
 
 dae::FPSComponent::FPSComponent(GameObject* pOwner)
 	: Component(pOwner)
-	, m_FPS(0)
+	, m_FPS(0.0f)
 	, m_FrameCount(0)
+	, m_TimeAccumulator(0.f)
 	, m_LastTime(std::chrono::high_resolution_clock::now())
 	, m_TextComponent(nullptr)
 {
@@ -14,36 +17,33 @@ dae::FPSComponent::FPSComponent(GameObject* pOwner)
 
 void dae::FPSComponent::Update()
 {
-	auto& timer = Timer::GetInstance();
-	float deltaTime = timer.GetDeltaTime();
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> deltaTime = currentTime - m_LastTime;
+	m_LastTime = currentTime;
+
+	m_TimeAccumulator += deltaTime.count();
 	m_FrameCount++;
 
-	if (deltaTime > 0.0f)
+	if (m_TimeAccumulator >= 0.1f) // Update every 0.1 seconds
 	{
-		float currentFPS = 1.0f / deltaTime;
-		m_FPSBuffer.push_back(currentFPS);
-
-		if (m_FPSBuffer.size() > m_BufferSize)
+		float newFPS = static_cast<float>(m_FrameCount) / m_TimeAccumulator;
+		if (std::abs(newFPS - m_FPS) > 0.1f) // Update only if FPS changes significantly
 		{
-			m_FPSBuffer.pop_front();
+			m_FPS = newFPS;
+
+			if (!m_TextComponent)
+			{
+				m_TextComponent = GetOwner()->GetComponentPtr<TextComponent>();
+			}
+
+			if (m_TextComponent)
+			{
+				m_TextComponent->SetText("FPS: " + GetStringFPS());
+			}
 		}
 
-		float sumFPS = 0.0f;
-		for (float fps : m_FPSBuffer)
-		{
-			sumFPS += fps;
-		}
-		m_FPS = sumFPS / m_FPSBuffer.size();
-
-		if (!m_TextComponent)
-		{
-			m_TextComponent = GetOwner()->GetComponent<TextComponent>();
-		}
-
-		if (m_TextComponent)
-		{
-			m_TextComponent->SetText("FPS: " + GetStringFPS());
-		}
+		m_FrameCount = 0;
+		m_TimeAccumulator = 0.f;
 	}
 
 	std::cout << "FPS: " << m_FPS << std::endl;
@@ -52,7 +52,6 @@ void dae::FPSComponent::Update()
 std::string dae::FPSComponent::GetStringFPS() const
 {
 	std::ostringstream stream;
-	stream.precision(1);
-	stream << std::fixed << m_FPS;
+	stream << std::fixed << std::setprecision(1) << m_FPS;
 	return stream.str();
 }

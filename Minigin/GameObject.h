@@ -13,18 +13,34 @@ namespace dae
 	class GameObject final
 	{
 	public:
-		void Update();
-		void Render() const;
-
-		void SetPosition(float x, float y);
-
 		GameObject() = default;
+		GameObject(GameObject* pParent);
 		~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+		void Update();
+		void Render() const;
+
+		void SetDestroyed(bool isDestroyed) { m_IsDestroyed = isDestroyed; }
+
+		bool IsDestroyed() const { return m_IsDestroyed; }
+
+#pragma region Position Functions
+		void SetWorldPosition(float x, float y, float z = 0.f);
+		void SetWorldPosition(const glm::vec3& position);
+
+		void SetLocalPosition(float x, float y, float z = 0.f);
+		void SetLocalPosition(const glm::vec3& position);
+
+		const glm::vec3& GetWorldPosition() const;
+		const glm::vec3& GetLocalPosition() const;
+
+#pragma endregion
+
+#pragma region Template Implementations
 		template <typename T, typename... Args>
 		T& AddComponent(Args&&... args);
 
@@ -32,18 +48,40 @@ namespace dae
 		void RemoveComponent();
 
 		template <typename T>
-		T* GetComponent() const;
+		T* GetComponentPtr() const;
 
 		template <typename T>
 		bool HasComponent() const;
+#pragma endregion
+
+#pragma region ParentChild Functions
+		void SetParent(GameObject* pParent, bool worldPositionStays = true);
+		
+		void AddChild(std::shared_ptr<GameObject> pChild);      //Do we really need AddChild/RemoveChild? No, being able to set the parent on a GameObject is enough
+		void RemoveChild(std::shared_ptr<GameObject> pChild);	//Set the parent to nullptr to remove the child from its parent
+		
+		bool IsChild(const GameObject* pChild) const;
+
+		GameObject* GetParentPtrAt() const { return m_pParent; }
+        GameObject* GetChildPtr(unsigned int index) const { return m_Children[index].get(); }
+		unsigned int GetChildCount() const { return static_cast<unsigned int>(m_Children.size()); }
+#pragma endregion
 
 	private:
-		Transform m_transform{};
+		Transform m_WorldTransform{};
+		Transform m_LocalTransform{};
+
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components;
+
+		GameObject* m_pParent = nullptr;
+		std::vector<std::unique_ptr<GameObject>> m_Children;
+
+		bool m_IsDestroyed = false;
 	};
 
+#pragma region Template Implementations
 	template <typename T, typename... Args>
-	T& GameObject::AddComponent(Args&&... args)
+	T& dae::GameObject::AddComponent(Args&&... args)
 	{
 		auto typeIndex = std::type_index(typeid(T));
 		if (m_Components.find(typeIndex) != m_Components.end())
@@ -58,7 +96,7 @@ namespace dae
 	}
 
 	template <typename T>
-	void GameObject::RemoveComponent()
+	void dae::GameObject::RemoveComponent()
 	{
 		auto typeIndex = std::type_index(typeid(T));
 		if (m_Components.find(typeIndex) == m_Components.end())
@@ -70,7 +108,7 @@ namespace dae
 	}
 
 	template <typename T>
-	T* GameObject::GetComponent() const
+	T* dae::GameObject::GetComponentPtr() const
 	{
 		auto typeIndex = std::type_index(typeid(T));
 		auto it = m_Components.find(typeIndex);
@@ -82,8 +120,9 @@ namespace dae
 	}
 
 	template <typename T>
-	bool GameObject::HasComponent() const
+	bool dae::GameObject::HasComponent() const
 	{
 		return m_Components.find(std::type_index(typeid(T))) != m_Components.end();
 	}
+#pragma endregion
 }

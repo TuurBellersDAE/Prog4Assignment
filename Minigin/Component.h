@@ -17,9 +17,16 @@ namespace dae
 		virtual void Update() = 0;
 		virtual void Render() const = 0;
 
+		bool IsDestroyed() const { return m_IsDestroyed; };
+
+		void SetDestroyed(bool isDestroyed) { m_IsDestroyed = isDestroyed; };
+
 	protected:
 		explicit Component(GameObject* pOwner) : m_pOwner(pOwner) {}
+
 		GameObject* GetOwner() const { return m_pOwner; }
+
+		bool m_IsDestroyed = false;
 
 	private:
 		GameObject* m_pOwner;

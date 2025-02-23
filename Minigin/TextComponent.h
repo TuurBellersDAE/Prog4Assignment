@@ -25,9 +25,12 @@ namespace dae
 
 		void SetText(const std::string& text);
 		void SetPosition(glm::vec3 position);
+		void SetShow(bool show) { m_IsRendered = show; }
 
 	private:
 		bool m_NeedsUpdate;
+		bool m_IsRendered;
+
 		std::string m_Text;
 		std::shared_ptr<Font> m_Font;
 		std::shared_ptr<Texture2D> m_TextTexture;

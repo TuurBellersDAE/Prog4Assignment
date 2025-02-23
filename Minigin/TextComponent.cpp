@@ -11,7 +11,7 @@
 //}
 
 dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, glm::vec3 position)
-	: Component(pOwner), m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), m_Position(position), m_TextTexture(nullptr)
+	: Component(pOwner), m_NeedsUpdate(true), m_IsRendered(true), m_Text(text), m_Font(std::move(font)), m_Position(position), m_TextTexture(nullptr)
 {
 }
 
@@ -38,7 +38,7 @@ void dae::TextComponent::Update()
 
 void dae::TextComponent::Render() const
 {
-	if (m_TextTexture != nullptr)
+	if (m_TextTexture != nullptr && m_IsRendered)
 	{
 		Renderer::GetInstance().RenderTexture(*m_TextTexture, m_Position.x, m_Position.y);
 	}

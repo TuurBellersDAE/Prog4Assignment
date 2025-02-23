@@ -25,11 +25,12 @@ namespace dae
 		std::string GetStringFPS() const;
 		float GetFPS() const { return m_FPS; }
 
-		void SetTextComponent(TextComponent* textComponent) { m_TextComponent = textComponent; }
+		//void SetTextComponent(TextComponent* textComponent) { m_TextComponent = textComponent; }
 
 	private:
 		float m_FPS;
 		float m_FrameCount;
+		float m_TimeAccumulator;
 		std::chrono::time_point<std::chrono::steady_clock> m_LastTime;
 		TextComponent* m_TextComponent;
 

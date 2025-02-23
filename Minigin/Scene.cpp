@@ -32,6 +32,14 @@ void Scene::Update()
 	{
 		object->Update();
 	}
+
+	for (auto& object : m_objects)
+	{
+		if (object->IsDestroyed())
+		{
+			Remove(object);
+		}
+	}
 }
 
 void Scene::Render() const
