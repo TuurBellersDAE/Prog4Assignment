@@ -57,11 +57,11 @@ void dae::GameObject::SetLocalPosition(const glm::vec3& position)
 }
 const glm::vec3& dae::GameObject::GetWorldPosition() const
 {
-	// TODO: insert return statement here
+	return m_WorldTransform.GetPosition();
 }
 const glm::vec3& dae::GameObject::GetLocalPosition() const
 {
-	// TODO: insert return statement here
+	return m_LocalTransform.GetPosition();
 }
 #pragma endregion
 
@@ -75,7 +75,7 @@ void dae::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 	}
 
 	// Update position, rotation, and scale
-	if (pParent)
+	if (pParent && worldPositionStays)
 	{
 		// Calculate the new local position
 		const auto& parentWorldPos = pParent->GetWorldPosition();
@@ -120,6 +120,7 @@ void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> pChild)
 
 bool dae::GameObject::IsChild(const GameObject* pChild) const
 {
-	return std::find(m_Children.begin(), m_Children.end(), pChild) != m_Children.end();
+	return std::find_if(m_Children.begin(), m_Children.end(),
+		[pChild](const std::unique_ptr<GameObject>& child) { return child.get() == pChild; }) != m_Children.end();
 }
 #pragma endregion
