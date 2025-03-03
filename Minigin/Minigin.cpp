@@ -16,6 +16,10 @@
 
 #include <SDL_syswm.h>
 
+#include "imgui.h"
+#include "backends/imgui_impl_opengl3.h"   //Don`t know why i cant just #include "imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"      //Don`t know why i cant just #include "imgui_impl_sdl2.h
+
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
