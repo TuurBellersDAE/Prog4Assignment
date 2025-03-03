@@ -131,3 +131,4 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		}
 	}
 }
+

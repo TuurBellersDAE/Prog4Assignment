@@ -102,6 +102,9 @@
     <ClInclude Include="..\3rdParty\imgui-plot-master\include\imgui_plot.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="ThrashTheCacheAssignment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
