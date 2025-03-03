@@ -34,7 +34,7 @@ namespace dae
 		std::string m_Text;
 		std::shared_ptr<Font> m_Font;
 		std::shared_ptr<Texture2D> m_TextTexture;
-		glm::vec3 m_Position;
+		//glm::vec3 m_Position;
 	};
 }
 

@@ -22,11 +22,12 @@ namespace dae
 		void Render() const override;
 
 		void SetTexture(const std::string& filename);
+		void SetPosition(glm::vec3 position);
 
 	private:
-		bool m_needsUpdate;
+		bool m_NeedsUpdate;
 		std::shared_ptr<Texture2D> m_Texture;
-		glm::vec3 m_Position;
+		//glm::vec3 m_Position;
 	};
 }
 

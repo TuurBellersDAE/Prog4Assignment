@@ -10,11 +10,11 @@ namespace dae
 {
 	class Component;
 
-	class GameObject final
+	class GameObject final : public std::enable_shared_from_this<GameObject>
 	{
 	public:
 		GameObject() = default;
-		GameObject(GameObject* pParent);
+		GameObject(std::shared_ptr<GameObject> pParent);
 		~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -25,6 +25,7 @@ namespace dae
 		void Render() const;
 
 		void SetDestroyed(bool isDestroyed) { m_IsDestroyed = isDestroyed; }
+		void SetPositionDirty(bool isDirty) { m_IsPositionDirty = isDirty; }
 
 		bool IsDestroyed() const { return m_IsDestroyed; }
 
@@ -35,7 +36,7 @@ namespace dae
 		void SetLocalPosition(float x, float y, float z = 0.f);
 		void SetLocalPosition(const glm::vec3& position);
 
-		const glm::vec3& GetWorldPosition() const;
+		const glm::vec3& GetWorldPosition();
 		const glm::vec3& GetLocalPosition() const;
 
 #pragma endregion
@@ -55,15 +56,15 @@ namespace dae
 #pragma endregion
 
 #pragma region ParentChild Functions
-		void SetParent(GameObject* pParent, bool worldPositionStays = true);
-		
+		void SetParent(std::shared_ptr<GameObject> pParent, bool worldPositionStays = true);
+
 		void AddChild(std::shared_ptr<GameObject> pChild);      //Do we really need AddChild/RemoveChild? No, being able to set the parent on a GameObject is enough
-		void RemoveChild(std::shared_ptr<GameObject> pChild);	//Set the parent to nullptr to remove the child from its parent
-		
+		void RemoveChild(std::shared_ptr<GameObject> pChild);   //Set the parent to nullptr to remove the child from its parent
+
 		bool IsChild(const GameObject* pChild) const;
 
-		GameObject* GetParentPtrAt() const { return m_pParent; }
-        GameObject* GetChildPtr(unsigned int index) const { return m_Children[index].get(); }
+		std::shared_ptr<GameObject> GetParentPtr() const { return m_pParent.lock(); }
+		std::shared_ptr<GameObject> GetChildPtr(unsigned int index) const { return m_Children[index]; }
 		unsigned int GetChildCount() const { return static_cast<unsigned int>(m_Children.size()); }
 #pragma endregion
 
@@ -73,10 +74,11 @@ namespace dae
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components;
 
-		GameObject* m_pParent = nullptr;
-		std::vector<std::unique_ptr<GameObject>> m_Children;
+		std::weak_ptr<GameObject> m_pParent;
+		std::vector<std::shared_ptr<GameObject>> m_Children;
 
 		bool m_IsDestroyed = false;
+		bool m_IsPositionDirty = false;
 	};
 
 #pragma region Template Implementations

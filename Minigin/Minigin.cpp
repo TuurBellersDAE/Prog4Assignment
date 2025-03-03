@@ -14,6 +14,8 @@
 #include <thread>
 #include <iostream>
 
+#include <SDL_syswm.h>
+
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
@@ -79,6 +81,19 @@ dae::Minigin::~Minigin()
 	SDL_Quit();
 }
 
+
+int GetOptimalFPS()
+{
+	SDL_DisplayMode displayMode;
+	if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0)
+	{
+		throw std::runtime_error(std::string("SDL_GetCurrentDisplayMode Error: ") + SDL_GetError());
+	}
+
+	// Assuming the refresh rate is a good target FPS
+	return displayMode.refresh_rate;
+}
+
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
@@ -88,7 +103,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& input = InputManager::GetInstance();
 	auto& timer = Timer::GetInstance();
 
-	const int targetFPS = 60;
+	const int targetFPS = GetOptimalFPS();
 	const auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
 
 	bool doContinue = true;

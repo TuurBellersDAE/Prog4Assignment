@@ -17,11 +17,11 @@ dae::FPSComponent::FPSComponent(GameObject* pOwner)
 
 void dae::FPSComponent::Update()
 {
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> deltaTime = currentTime - m_LastTime;
-	m_LastTime = currentTime;
+	//auto currentTime = std::chrono::high_resolution_clock::now();
+	//std::chrono::duration<float> deltaTime = currentTime - m_LastTime;
+	//m_LastTime = currentTime;
 
-	m_TimeAccumulator += deltaTime.count();
+	m_TimeAccumulator += Timer::GetInstance().GetDeltaTime();
 	m_FrameCount++;
 
 	if (m_TimeAccumulator >= 0.1f) // Update every 0.1 seconds

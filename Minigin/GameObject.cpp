@@ -3,27 +3,58 @@
 //#include "ResourceManager.h"
 //#include "Renderer.h"
 #include "Component.h"
+#include <iostream>
 
-dae::GameObject::GameObject(GameObject* pParent)
+dae::GameObject::GameObject(std::shared_ptr<GameObject> pParent)
 {
 	SetParent(pParent);
 }
 
-dae::GameObject::~GameObject() = default;
+dae::GameObject::~GameObject()
+{
+	// Detach all children
+	for (auto& child : m_Children)
+	{
+		child->SetParent(nullptr, false);
+	}
+
+	// If this object has a parent, remove it from the parent's children
+	if (auto parent = m_pParent.lock())
+	{
+		auto& siblings = parent->m_Children;
+		siblings.erase(std::remove(siblings.begin(), siblings.end(), shared_from_this()), siblings.end());
+	}
+}
 
 void dae::GameObject::Update()
 {
+	// Update all components
 	for (const auto& component : m_Components)
 	{
 		component.second->Update();
 	}
 
-	for (const auto& component : m_Components)
+	// Remove destroyed components
+	for (auto it = m_Components.begin(); it != m_Components.end();)
 	{
-		if (component.second->IsDestroyed())
+		if (it->second->IsDestroyed())
 		{
-			m_Components.erase(component.first);
+			it = m_Components.erase(it);
 		}
+		else
+		{
+			++it;
+		}
+	}
+
+	if (m_pParent.expired())
+	{
+		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition());
+	}
+	else
+	{
+		auto parent = m_pParent.lock();
+		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition() + parent->GetWorldPosition());
 	}
 }
 
@@ -39,26 +70,52 @@ void dae::GameObject::Render() const
 void dae::GameObject::SetWorldPosition(float x, float y, float z)
 {
 	m_WorldTransform.SetPosition(x, y, z);
+	if (m_pParent.expired())
+	{
+		m_LocalTransform.SetPosition(x, y, z);
+	}
+	else
+	{
+		auto parent = m_pParent.lock();
+		m_LocalTransform.SetPosition(x - parent->GetWorldPosition().x, y - parent->GetWorldPosition().y, z - parent->GetWorldPosition().z);
+	}
 }
 
 void dae::GameObject::SetWorldPosition(const glm::vec3& position)
 {
-	m_WorldTransform.SetPosition(position);
+	SetWorldPosition(position.x, position.y, position.z);
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y, float z)
 {
 	m_LocalTransform.SetPosition(x, y, z);
+	SetPositionDirty(true);
 }
 
 void dae::GameObject::SetLocalPosition(const glm::vec3& position)
 {
-	m_LocalTransform.SetPosition(position);
+	SetLocalPosition(position.x, position.y, position.z);
 }
-const glm::vec3& dae::GameObject::GetWorldPosition() const
+
+const glm::vec3& dae::GameObject::GetWorldPosition()
 {
+	if (m_IsPositionDirty)
+	{
+		if (m_pParent.expired())
+		{
+			m_WorldTransform.SetPosition(m_LocalTransform.GetPosition());
+		}
+		else
+		{
+			auto parent = m_pParent.lock();
+			m_WorldTransform.SetPosition(m_LocalTransform.GetPosition() + parent->GetWorldPosition());
+		}
+		m_IsPositionDirty = false;
+	}
+
 	return m_WorldTransform.GetPosition();
 }
+
 const glm::vec3& dae::GameObject::GetLocalPosition() const
 {
 	return m_LocalTransform.GetPosition();
@@ -66,36 +123,32 @@ const glm::vec3& dae::GameObject::GetLocalPosition() const
 #pragma endregion
 
 #pragma region ParentChild Functions
-void dae::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
+void dae::GameObject::SetParent(std::shared_ptr<GameObject> pParent, bool keepWorldPosition)
 {
 	// Check if the new parent is valid (not itself or one of its children)
-	if (pParent == this || (pParent && pParent->IsChild(this)))
+	if (pParent.get() == this || (pParent && pParent->IsChild(this)))
 	{
 		throw std::runtime_error("Invalid parent.");
 	}
 
 	// Update position, rotation, and scale
-	if (pParent && worldPositionStays)
+	if (!pParent)
 	{
-		// Calculate the new local position
-		const auto& parentWorldPos = pParent->GetWorldPosition();
-		const auto& worldPos = GetWorldPosition();
-		const auto localPos = worldPos - parentWorldPos;
-		// Set the new local position
-		SetLocalPosition(localPos);
+		SetLocalPosition(GetWorldPosition());
 	}
 	else
 	{
-		// Set the new world position
-		SetWorldPosition(GetLocalPosition());
+		if (keepWorldPosition)
+		{
+			SetLocalPosition(GetWorldPosition() - pParent->GetWorldPosition());
+		}
 	}
 
 	// Remove itself from the previous parent
-	if (m_pParent)
+	if (auto parent = m_pParent.lock())
 	{
-		auto& siblings = m_pParent->m_Children;
-		siblings.erase(std::remove_if(siblings.begin(), siblings.end(),
-			[this](const std::unique_ptr<GameObject>& child) { return child.get() == this; }), siblings.end());
+		auto& siblings = parent->m_Children;
+		siblings.erase(std::remove(siblings.begin(), siblings.end(), shared_from_this()), siblings.end());
 	}
 
 	// Set the given parent on itself
@@ -104,23 +157,29 @@ void dae::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 	// Add itself as a child to the given parent
 	if (pParent)
 	{
-		pParent->m_Children.push_back(std::unique_ptr<GameObject>(this));
+		pParent->m_Children.push_back(shared_from_this());
 	}
 }
 
 void dae::GameObject::AddChild(std::shared_ptr<GameObject> pChild)
 {
-
+	if (pChild)
+	{
+		pChild->SetParent(shared_from_this(), false);
+	}
 }
 
 void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> pChild)
 {
-	//m_Children.erase(std::remove(m_Children.begin(), m_Children.end(), pChild), m_Children.end());
+	if (pChild)
+	{
+		pChild->SetParent(nullptr, false);
+	}
 }
 
 bool dae::GameObject::IsChild(const GameObject* pChild) const
 {
 	return std::find_if(m_Children.begin(), m_Children.end(),
-		[pChild](const std::unique_ptr<GameObject>& child) { return child.get() == pChild; }) != m_Children.end();
+		[pChild](const std::shared_ptr<GameObject>& child) { return child.get() == pChild; }) != m_Children.end();
 }
 #pragma endregion
