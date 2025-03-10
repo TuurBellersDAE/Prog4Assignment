@@ -33,6 +33,7 @@ void dae::SceneManager::Render()
 	if (m_isIMGUIActive)
 	{
 		DisplayTrashTheCache();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 }
 

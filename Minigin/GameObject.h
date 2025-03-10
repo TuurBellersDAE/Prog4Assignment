@@ -39,6 +39,8 @@ namespace dae
 		const glm::vec3& GetWorldPosition();
 		const glm::vec3& GetLocalPosition() const;
 
+		void Move(float dx, float dy, float dz);
+
 #pragma endregion
 
 #pragma region Template Implementations

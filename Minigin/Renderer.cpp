@@ -51,7 +51,7 @@ void dae::Renderer::Render() const
 	//ImGui::Render();
 	//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	
 
 	SDL_RenderPresent(m_renderer);
 }

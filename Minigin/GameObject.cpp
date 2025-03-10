@@ -120,6 +120,10 @@ const glm::vec3& dae::GameObject::GetLocalPosition() const
 {
 	return m_LocalTransform.GetPosition();
 }
+void dae::GameObject::Move(float dx, float dy, float dz)
+{
+	m_LocalTransform.Move(dx, dy, dz);
+}
 #pragma endregion
 
 #pragma region ParentChild Functions

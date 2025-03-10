@@ -1,30 +1,46 @@
 #include <SDL.h>
 #include "InputManager.h"
-
-
+#include <windows.h>
+#include <XInput.h>
 #include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"   //Don`t know why i cant just #include "imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdl2.h"      //Don`t know why i cant just #include "imgui_impl_sdl2.h
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"
 
-
-bool dae::InputManager::ProcessInput()
+void dae::InputManager::RegisterCommand(SDL_Keycode key, std::unique_ptr<Command> command) 
 {
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			return false;
-		}
-		if (e.type == SDL_KEYDOWN) 
-		{
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
-		}
-		// etc...
+    m_commands[key] = std::move(command);
+}
 
-		ImGui_ImplSDL2_ProcessEvent(&e);
-	}
+void dae::InputManager::UnregisterCommand(SDL_Keycode key) 
+{
+    m_commands.erase(key);
+}
 
-	return true;
+bool dae::InputManager::ProcessInput() 
+{
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) 
+    {
+        if (e.type == SDL_QUIT) 
+        {
+            return false;
+        }
+        if (e.type == SDL_KEYDOWN) 
+        {
+            auto it = m_commands.find(e.key.keysym.sym);
+            if (it != m_commands.end()) 
+            {
+                it->second->Execute();
+            }
+        }
+        if (e.type == SDL_MOUSEBUTTONDOWN) 
+        {
+            // Handle mouse button down events if needed
+        }
+        // etc...
+
+        ImGui_ImplSDL2_ProcessEvent(&e);
+    }
+
+    return true;
 }

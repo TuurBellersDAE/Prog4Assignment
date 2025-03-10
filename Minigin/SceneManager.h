@@ -20,7 +20,7 @@ namespace dae
 		SceneManager() = default;
 		std::vector<std::shared_ptr<Scene>> m_scenes;
 
-		bool m_isIMGUIActive{true};
+		bool m_isIMGUIActive{false};
 
 		void DisplayTrashTheCache();
 
