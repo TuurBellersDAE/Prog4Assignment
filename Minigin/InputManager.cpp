@@ -64,6 +64,7 @@ bool dae::InputManager::ProcessInput()
 void dae::InputManager::ProcessControllerInput()
 {
 	//Controller isn't connected and i don`t know how to fix it and thus don't know how to test it
+	//I think the issue lies with the fact i am using a ps4 controller and not an xbox controller but realized this too late RIP
 	DWORD dwResult;
 	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
 	{
