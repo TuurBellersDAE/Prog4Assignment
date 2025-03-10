@@ -4,18 +4,24 @@
 #include <memory>
 #include "Command.h"
 
+#include <windows.h>
+#include <XInput.h>
+
+
 namespace dae
 {
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
 		void RegisterCommand(SDL_Keycode key, std::unique_ptr<Command> command);
+		void RegisterCommand(WORD button, std::unique_ptr<Command> command);
 		void UnregisterCommand(SDL_Keycode key);
 		bool ProcessInput();
 
 	private:
-
+		void ProcessControllerInput();
 		std::unordered_map<SDL_Keycode, std::unique_ptr<Command>> m_commands;
+		std::unordered_map<WORD, std::unique_ptr<Command>> m_controllerCommands;
 	};
 
 }
