@@ -16,31 +16,39 @@ void dae::InputManager::UnregisterCommand(SDL_Keycode key)
     m_commands.erase(key);
 }
 
-bool dae::InputManager::ProcessInput() 
+bool dae::InputManager::ProcessInput()
 {
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) 
-    {
-        if (e.type == SDL_QUIT) 
-        {
-            return false;
-        }
-        if (e.type == SDL_KEYDOWN) 
-        {
-            auto it = m_commands.find(e.key.keysym.sym);
-            if (it != m_commands.end()) 
-            {
-                it->second->Execute();
-            }
-        }
-        if (e.type == SDL_MOUSEBUTTONDOWN) 
-        {
-            // Handle mouse button down events if needed
-        }
-        // etc...
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+		if (e.type == SDL_QUIT)
+		{
+			return false;
+		}
+		if (e.type == SDL_KEYDOWN)
+		{
+			auto it = m_commands.find(e.key.keysym.sym);
+			if (it != m_commands.end())
+			{
+				it->second->Execute();
+			}
+		}
+		if (e.type == SDL_KEYUP)
+		{
+			auto it = m_commands.find(e.key.keysym.sym);
+			if (it != m_commands.end())
+			{
+				it->second->Stop(); // Assuming you have a Stop method in your Command class
+			}
+		}
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			// Handle mouse button down events if needed
+		}
 
-        ImGui_ImplSDL2_ProcessEvent(&e);
-    }
+		ImGui_ImplSDL2_ProcessEvent(&e);
+	}
 
-    return true;
+	return true;
 }
+

@@ -16,7 +16,12 @@ void dae::Transform::SetPosition(const glm::vec3& position)
 void dae::Transform::Move(float dx, float dy, float dz)
 {
 	auto deltaTime = Timer::GetInstance().GetDeltaTime();
-	m_position.x += dx * deltaTime;
-	m_position.y += dy * deltaTime;
-	m_position.z += dz * deltaTime;
+	m_position.x += dx * deltaTime * m_movementSpeed;
+	m_position.y += dy * deltaTime * m_movementSpeed;
+	m_position.z += dz * deltaTime * m_movementSpeed;
+}
+
+const glm::vec3& dae::Transform::GetPosition() const
+{
+	return m_position;
 }

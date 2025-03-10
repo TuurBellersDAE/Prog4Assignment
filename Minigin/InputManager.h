@@ -14,6 +14,7 @@ namespace dae
 		bool ProcessInput();
 
 	private:
+
 		std::unordered_map<SDL_Keycode, std::unique_ptr<Command>> m_commands;
 	};
 
