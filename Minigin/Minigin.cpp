@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdexcept>
 #define WIN32_LEAN_AND_MEAN 
 #include <windows.h>
@@ -25,6 +26,8 @@
 
 SDL_Window* g_window{};
 SDL_GLContext g_context;
+
+#include <steam_api.h>
 
 void PrintSDLVersion()
 {
@@ -145,6 +148,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		doContinue = input.ProcessInput();
 
 		//DisplayTrashTheCache();
+		
+		// Call SteamAPI_RunCallbacks() every frame
+		//SteamAPI_RunCallbacks();
 
 		sceneManager.Update();
 		renderer.Render();
