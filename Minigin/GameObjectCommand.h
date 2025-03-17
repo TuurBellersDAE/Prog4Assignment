@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "Command.h"
-#include "MovementComponent.h"
 
 #include <iostream>
 
@@ -29,52 +28,34 @@ namespace dae
 
 		void Execute() override
 		{
-			auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-			if (movementComponent)
+			auto gameObject = GetGameObject();
+			if (gameObject)
 			{
-				auto currentDirection = movementComponent->GetDirection();
-				movementComponent->SetDirection(currentDirection + m_Direction);
+                gameObject->SetDirection(m_Direction);
 			}
-            else
-            {
-				std::cout << "No MovementComponent found on GameObject" << std::endl;
-            }
 		}
+
 
 		void Stop() override
 		{
-			auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-			if (movementComponent)
+			auto gameObject = GetGameObject();
+			if (gameObject)
 			{
-				auto currentDirection = movementComponent->GetDirection();
-				//movementComponent->SetDirection(currentDirection - m_Direction);
-
-				if (m_Direction.x != 0.f)
+				auto currentDirection = gameObject->GetDirection();
+            
+				if (m_Direction.x != 0.f && currentDirection.x == m_Direction.x)
 				{
-					if (currentDirection.x > 0.f && m_Direction.x > 0.f)
-						movementComponent->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
-					else if (currentDirection.x < 0.f && m_Direction.x < 0.f)
-						movementComponent->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
+					gameObject->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
 				}
-				else if (m_Direction.y != 0.f)
+				else if (m_Direction.y != 0.f && currentDirection.y == m_Direction.y)
 				{
-					if (currentDirection.y > 0.f && m_Direction.y > 0.f)
-						movementComponent->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
-					else if (currentDirection.y < 0.f && m_Direction.y < 0.f)
-						movementComponent->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
+					gameObject->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
 				}
-				else if (m_Direction.z != 0.f)
+				else if (m_Direction.z != 0.f && currentDirection.z == m_Direction.z)
 				{
-					if (currentDirection.z > 0.f && m_Direction.z > 0.f)
-						movementComponent->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
-					else if (currentDirection.z < 0.f && m_Direction.z < 0.f)
-						movementComponent->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
+					gameObject->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
 				}
 			}
-            else
-            {
-				std::cout << "No MovementComponent found on GameObject" << std::endl;
-            }
 		}
 
 	private:
@@ -86,25 +67,25 @@ namespace dae
         MoveLeftCommand(GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
         void Execute() override
         {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.x > 0.f)
-                    movementComponent->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
                 else
-                    movementComponent->SetDirection(glm::vec3(-1.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(-1.f, direction.y, direction.z));
             }
         }
 
         void Stop() override
         {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.x < 0.f)
-                    movementComponent->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
             }
         }
     };
@@ -114,25 +95,25 @@ namespace dae
         MoveRightCommand(GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
         void Execute() override
         {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.x < 0.f)
-                    movementComponent->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
                 else
-                    movementComponent->SetDirection(glm::vec3(1.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(1.f, direction.y, direction.z));
             }
         }
 
         void Stop() override
         {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.x > 0.f)
-                    movementComponent->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
             }
         }
     };
@@ -141,26 +122,26 @@ namespace dae
     public:
         MoveUpCommand(GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
         void Execute() override
-        {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+		{
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.y > 0.f)
-                    movementComponent->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
                 else
-                    movementComponent->SetDirection(glm::vec3(direction.x, -1.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, -1.f, direction.z));
             }
         }
 
         void Stop() override
-        {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+		{
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.y < 0.f)
-                    movementComponent->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
             }
         }
     };
@@ -169,26 +150,26 @@ namespace dae
     public:
         MoveDownCommand(GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
         void Execute() override
-        {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+		{
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.y < 0.f)
-                    movementComponent->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
                 else
-                    movementComponent->SetDirection(glm::vec3(direction.x, 1.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, 1.f, direction.z));
             }
         }
 
         void Stop() override
-        {
-            auto movementComponent = GetGameObject()->GetComponentPtr<MovementComponent>();
-            if (movementComponent)
+		{
+			auto gameObject = GetGameObject();
+            if (gameObject)
             {
-                auto direction = movementComponent->GetDirection();
+                auto direction = gameObject->GetDirection();
                 if (direction.y > 0.f)
-                    movementComponent->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
             }
         }
     };

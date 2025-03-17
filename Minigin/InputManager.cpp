@@ -8,12 +8,12 @@
 
 #pragma comment(lib, "Xinput9_1_0.lib")
 
-void dae::InputManager::RegisterCommand(SDL_Keycode key, std::unique_ptr<Command> command)
+void dae::InputManager::RegisterKeyCommand(SDL_Keycode key, std::unique_ptr<Command> command)
 {
 	m_commands[key] = std::move(command);
 }
 
-void dae::InputManager::RegisterCommand(WORD button, std::unique_ptr<Command> command)
+void dae::InputManager::RegisterControllerCommand(WORD button, std::unique_ptr<Command> command)
 {
 	m_controllerCommands[button] = std::move(command);
 }
@@ -63,8 +63,6 @@ bool dae::InputManager::ProcessInput()
 
 void dae::InputManager::ProcessControllerInput()
 {
-	//Controller isn't connected and i don`t know how to fix it and thus don't know how to test it
-	//I think the issue lies with the fact i am using a ps4 controller and not an xbox controller but realized this too late RIP
 	DWORD dwResult;
 	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
 	{
@@ -78,6 +76,7 @@ void dae::InputManager::ProcessControllerInput()
 		{
 			// Controller is connected
 			std::cout << "Controller " << i << " connected" << std::endl;
+			std::cout << "Buttons pressed: " << state.Gamepad.wButtons << std::endl;
 			for (const auto& [button, command] : m_controllerCommands)
 			{
 				if (state.Gamepad.wButtons & button)
@@ -94,7 +93,7 @@ void dae::InputManager::ProcessControllerInput()
 		else
 		{
 			// Controller is not connected
-			std::cout << "Controller " << i << " not connected, error code: " << dwResult << std::endl;
+			//std::cout << "Controller " << i << " not connected, error code: " << dwResult << std::endl;
 		}
 	}
 }

@@ -4,6 +4,7 @@
 //#include "Renderer.h"
 #include "Component.h"
 #include <iostream>
+#include "Timer.h"
 
 dae::GameObject::GameObject(std::shared_ptr<GameObject> pParent)
 {
@@ -56,6 +57,8 @@ void dae::GameObject::Update()
 		auto parent = m_pParent.lock();
 		m_WorldTransform.SetPosition(m_LocalTransform.GetPosition() + parent->GetWorldPosition());
 	}
+
+	UpdateMovement();
 }
 
 void dae::GameObject::Render() const
@@ -120,10 +123,6 @@ const glm::vec3& dae::GameObject::GetLocalPosition() const
 {
 	return m_LocalTransform.GetPosition();
 }
-void dae::GameObject::Move(float dx, float dy, float dz)
-{
-	m_LocalTransform.Move(dx, dy, dz);
-}
 #pragma endregion
 
 #pragma region ParentChild Functions
@@ -185,5 +184,78 @@ bool dae::GameObject::IsChild(const GameObject* pChild) const
 {
 	return std::find_if(m_Children.begin(), m_Children.end(),
 		[pChild](const std::shared_ptr<GameObject>& child) { return child.get() == pChild; }) != m_Children.end();
+}
+#pragma endregion
+
+#pragma region Move Functions
+void dae::GameObject::UpdateMovement()
+{
+	if (m_IsMoving) 
+	{
+		auto deltaTime = Timer::GetInstance().GetDeltaTime();
+		auto position = m_LocalTransform.GetPosition();
+		position.x += m_CombinedDirection.x * deltaTime * m_Speed;
+		position.y += m_CombinedDirection.y * deltaTime * m_Speed;
+		position.z += m_CombinedDirection.z * deltaTime * m_Speed;
+		SetWorldPosition(position);
+	}
+}
+
+void dae::GameObject::MoveLeft()
+{
+}
+
+void dae::GameObject::MoveRight()
+{
+}
+
+void dae::GameObject::MoveUp()
+{
+}
+
+void dae::GameObject::MoveDown()
+{
+}
+
+void dae::GameObject::SetSpeed(float speed)
+{
+	m_Speed = speed;
+}
+
+void dae::GameObject::SetDirection(const glm::vec3& direction)
+{
+	//Some work to do here
+
+	m_Direction = direction;
+	m_IsMoving = (direction != glm::vec3(0.f, 0.f, 0.f));
+	if (m_IsMoving)
+	{
+		m_CombinedDirection += m_Direction;
+		m_CombinedDirection = glm::normalize(m_CombinedDirection);
+	}
+	else
+	{
+		m_CombinedDirection = glm::vec3(0.f, 0.f, 0.f);
+	}
+}
+
+void dae::GameObject::SetIsMoving(bool isMoving)
+{
+	m_IsMoving = isMoving;
+}
+
+glm::vec3 dae::GameObject::GetDirection() const
+{
+	return m_Direction;
+}
+
+float dae::GameObject::GetSpeed() const
+{
+	return m_Speed;
+}
+
+bool dae::GameObject::IsMoving() const
+{
+	return m_IsMoving;
 }
 #pragma endregion

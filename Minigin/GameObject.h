@@ -39,8 +39,6 @@ namespace dae
 		const glm::vec3& GetWorldPosition();
 		const glm::vec3& GetLocalPosition() const;
 
-		void Move(float dx, float dy, float dz);
-
 #pragma endregion
 
 #pragma region Template Implementations
@@ -70,6 +68,23 @@ namespace dae
 		unsigned int GetChildCount() const { return static_cast<unsigned int>(m_Children.size()); }
 #pragma endregion
 
+#pragma region Move funtions
+		void UpdateMovement();
+
+		void MoveLeft();
+		void MoveRight();
+		void MoveUp();
+		void MoveDown();
+
+		void SetSpeed(float speed);
+		void SetDirection(const glm::vec3& direction);
+		void SetIsMoving(bool isMoving);
+
+		glm::vec3 GetDirection() const;
+		float GetSpeed() const;
+		bool IsMoving() const;
+#pragma endregion
+
 	private:
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};
@@ -81,6 +96,11 @@ namespace dae
 
 		bool m_IsDestroyed = false;
 		bool m_IsPositionDirty = false;
+
+		glm::vec3 m_Direction{ 0.f, 0.f, 0.f };
+		glm::vec3 m_CombinedDirection{ 0.f, 0.f, 0.f };
+		float m_Speed = 100.f;
+		bool m_IsMoving = false;
 	};
 
 #pragma region Template Implementations

@@ -13,8 +13,8 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		void RegisterCommand(SDL_Keycode key, std::unique_ptr<Command> command);
-		void RegisterCommand(WORD button, std::unique_ptr<Command> command);
+		void RegisterKeyCommand(SDL_Keycode key, std::unique_ptr<Command> command);
+		void RegisterControllerCommand(WORD button, std::unique_ptr<Command> command);
 		void UnregisterCommand(SDL_Keycode key);
 		bool ProcessInput();
 
