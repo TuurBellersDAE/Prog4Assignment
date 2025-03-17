@@ -10,11 +10,11 @@ namespace dae
 {
 	class Component;
 
-	class GameObject final : public std::enable_shared_from_this<GameObject>
+	class GameObject final
 	{
 	public:
 		GameObject() = default;
-		GameObject(std::shared_ptr<GameObject> pParent);
+		GameObject(GameObject* pParent);
 		~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -56,19 +56,19 @@ namespace dae
 #pragma endregion
 
 #pragma region ParentChild Functions
-		void SetParent(std::shared_ptr<GameObject> pParent, bool worldPositionStays = true);
+		void SetParent(GameObject* pParent, bool worldPositionStays = true);
 
-		void AddChild(std::shared_ptr<GameObject> pChild);      //Do we really need AddChild/RemoveChild? No, being able to set the parent on a GameObject is enough
-		void RemoveChild(std::shared_ptr<GameObject> pChild);   //Set the parent to nullptr to remove the child from its parent
+		void AddChild(GameObject* pChild);
+		void RemoveChild(GameObject* pChild);
 
 		bool IsChild(const GameObject* pChild) const;
 
-		std::shared_ptr<GameObject> GetParentPtr() const { return m_pParent.lock(); }
-		std::shared_ptr<GameObject> GetChildPtr(unsigned int index) const { return m_Children[index]; }
+		GameObject* GetParentPtr() const { return m_pParent; }
+		GameObject* GetChildPtr(unsigned int index) const { return m_Children[index]; }
 		unsigned int GetChildCount() const { return static_cast<unsigned int>(m_Children.size()); }
 #pragma endregion
 
-#pragma region Move funtions
+#pragma region Move Functions
 		void UpdateMovement();
 
 		void MoveLeft();
@@ -91,8 +91,8 @@ namespace dae
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components;
 
-		std::weak_ptr<GameObject> m_pParent;
-		std::vector<std::shared_ptr<GameObject>> m_Children;
+		GameObject* m_pParent = nullptr;
+		std::vector<GameObject*> m_Children;
 
 		bool m_IsDestroyed = false;
 		bool m_IsPositionDirty = false;
