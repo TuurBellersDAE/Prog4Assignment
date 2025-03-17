@@ -1,11 +1,23 @@
 #include "Scene.h"
 #include "GameObject.h"
+#include "Observer.h"
 
 #include <algorithm>
 
 using namespace dae;
 
 unsigned int Scene::m_idCounter = 0;
+
+dae::Observer* dae::Scene::AddObserver(std::unique_ptr<Observer> observer)
+{
+	m_Observers.push_back(std::move(observer));
+	return m_Observers.back().get();
+}
+
+void dae::Scene::RemoveObserver(Observer* observer)
+{
+	m_Observers.erase(std::remove_if(m_Observers.begin(), m_Observers.end(), [observer](const std::unique_ptr<Observer>& o) { return o.get() == observer; }), m_Observers.end());
+}
 
 Scene::Scene(const std::string& name) : m_name(name) {}
 

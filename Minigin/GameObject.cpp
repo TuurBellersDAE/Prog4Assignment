@@ -222,7 +222,7 @@ void dae::GameObject::SetDirection(const glm::vec3& direction)
 	m_IsMoving = (direction != glm::vec3(0.f, 0.f, 0.f));
 	if (m_IsMoving)
 	{
-		m_CombinedDirection += m_Direction;
+		m_CombinedDirection = m_Direction; //+= for diagonal but still buggy
 		m_CombinedDirection = glm::normalize(m_CombinedDirection);
 	}
 	else

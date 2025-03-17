@@ -1,7 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "Command.h"
-
+#include "ScoreComponent.h"
+#include "HealthComponent.h"
 #include <iostream>
 
 namespace dae
@@ -35,14 +36,13 @@ namespace dae
 			}
 		}
 
-
 		void Stop() override
 		{
 			auto gameObject = GetGameObject();
 			if (gameObject)
 			{
 				auto currentDirection = gameObject->GetDirection();
-            
+
 				if (m_Direction.x != 0.f && currentDirection.x == m_Direction.x)
 				{
 					gameObject->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
@@ -173,4 +173,47 @@ namespace dae
             }
         }
     };
+
+	class ScoreCommand final : public GameObjectCommand 
+	{
+	public:
+		ScoreCommand(GameObject* pGameObject, int score) : GameObjectCommand(pGameObject), m_Score(score) {}
+		void Execute() override
+		{
+			auto gameObject = GetGameObject();
+			if (gameObject)
+			{
+				auto scoreComponent = gameObject->GetComponentPtr<ScoreComponent>();
+				if (scoreComponent)
+				{
+					scoreComponent->AddScore(m_Score);
+				}
+			}
+		}
+
+	private:
+		int m_Score;
+	};
+
+	class DamageCommand final : public GameObjectCommand
+	{
+	public:
+		DamageCommand(GameObject* pGameObject, int damage) : GameObjectCommand(pGameObject), m_Damage(damage) {}
+		void Execute() override
+		{
+			auto gameObject = GetGameObject();
+			if (gameObject)
+			{
+				auto healthComponent = gameObject->GetComponentPtr<HealthComponent>();
+				if (healthComponent)
+				{
+					healthComponent->TakeDamage(m_Damage);
+				}
+			}
+		}
+
+	private:
+		int m_Damage;
+	};
+
 }
