@@ -1,7 +1,6 @@
 #include "HealthComponent.h"
 #include "GameObject.h"
 #include "TextComponent.h"
-#include "Observer.h"
 
 dae::HealthComponent::HealthComponent(GameObject* pOwner)
 	: Component(pOwner)

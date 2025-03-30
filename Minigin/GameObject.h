@@ -9,6 +9,7 @@
 namespace dae
 {
 	class Component;
+	class Observer;
 
 	class GameObject final
 	{
@@ -85,6 +86,12 @@ namespace dae
 		bool IsMoving() const;
 #pragma endregion
 
+#pragma region Observer Functions
+		Observer* AddObserver(std::unique_ptr<Observer> pObserver);
+		void RemoveObserver(Observer* pObserver);
+		void Notify(const Event& event);
+#pragma endregion
+
 	private:
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};
@@ -101,6 +108,8 @@ namespace dae
 		glm::vec3 m_CombinedDirection{ 0.f, 0.f, 0.f };
 		float m_Speed = 100.f;
 		bool m_IsMoving = false;
+
+		std::vector < std::unique_ptr<Observer>> m_pObservers;
 	};
 
 #pragma region Template Implementations

@@ -23,8 +23,8 @@ namespace dae
 		Scene& operator=(const Scene& other) = delete;
 		Scene& operator=(Scene&& other) = delete;
 
-		Observer* AddObserver(std::unique_ptr<Observer> observer);
-		void RemoveObserver(Observer* observer);
+		//Observer* AddObserver(std::unique_ptr<Observer> observer);
+		//void RemoveObserver(Observer* observer);
 
 	private: 
 		explicit Scene(const std::string& name);
@@ -34,7 +34,7 @@ namespace dae
 
 		static unsigned int m_idCounter; 
 
-		std::vector < std::unique_ptr<Observer>> m_Observers;
+		//std::vector < std::unique_ptr<Observer>> m_Observers;
 	};
 
 }

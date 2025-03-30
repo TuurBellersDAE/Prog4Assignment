@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Timer.h"
 
+#include "Observer.h"
+
 dae::GameObject::GameObject(GameObject* pParent)
 {
 	SetParent(pParent);
@@ -249,5 +251,18 @@ float dae::GameObject::GetSpeed() const
 bool dae::GameObject::IsMoving() const
 {
 	return m_IsMoving;
+}
+#pragma endregion
+
+#pragma region Observer Functions
+dae::Observer* dae::GameObject::AddObserver(std::unique_ptr<Observer> pObserver)
+{
+	m_pObservers.push_back(std::move(pObserver));
+	return m_pObservers.back().get();
+}
+
+void dae::GameObject::RemoveObserver(Observer* pObserver)
+{
+	m_pObservers.erase(std::remove_if(m_pObservers.begin(), m_pObservers.end(), [pObserver](const std::unique_ptr<Observer>& o) { return o.get() == pObserver; }), m_pObservers.end());
 }
 #pragma endregion
