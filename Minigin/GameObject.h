@@ -89,7 +89,7 @@ namespace dae
 #pragma region Observer Functions
 		Observer* AddObserver(std::unique_ptr<Observer> pObserver);
 		void RemoveObserver(Observer* pObserver);
-		void Notify(const Event& event);
+		//void Notify(const Event& event);
 #pragma endregion
 
 	private:
