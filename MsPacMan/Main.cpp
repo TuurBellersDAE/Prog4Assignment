@@ -24,7 +24,8 @@
 #include "InputManager.h"
 #include "GameObjectCommand.h"
 
-#include "Observer.h"
+//#include "Observer.h"
+#include "GameObserver.h"
 
 //#include <steam_api.h>
 

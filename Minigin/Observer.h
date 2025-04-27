@@ -56,7 +56,7 @@ namespace dae
 	};
 
 #pragma region Observers
-	class HealthObserver final : public Observer
+	/*class HealthObserver final : public Observer
 	{
 	public:
 		virtual ~HealthObserver() = default;
@@ -71,7 +71,7 @@ namespace dae
 		virtual ~ScoreObserver() = default;
 
 		void OnNotify(const GameObject& gameObject, const Event& event) override;
-	};
+	};*/
 #pragma endregion
 }
 

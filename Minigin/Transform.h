@@ -13,7 +13,7 @@ namespace dae
 		float GetMovementSpeed() const { return m_movementSpeed; }
 
 	private:
-		glm::vec3 m_position;
+		glm::vec3 m_position{};
 		float m_movementSpeed{ 100.0f }; // Default movement speed
 	};
 }

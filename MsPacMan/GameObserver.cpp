@@ -1,5 +1,4 @@
-#include "Observer.h"
-/*
+#include "GameObserver.h"
 #include "HealthComponent.h"
 #include "ScoreComponent.h"
 #include "TextComponent.h"
@@ -74,4 +73,4 @@ void dae::ScoreObserver::OnNotify(const GameObject& gameObject, const Event& eve
 			break;
 		}
 	}
-}*/
+}

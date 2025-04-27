@@ -114,17 +114,8 @@
     <ClInclude Include="Command.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Observers</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreComponent.h">
-      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -206,17 +197,8 @@
     <ClCompile Include="Command.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectCommand.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Observer.cpp">
       <Filter>Observers</Filter>
-    </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="ScoreComponent.cpp">
-      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
