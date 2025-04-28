@@ -23,5 +23,4 @@ namespace dae
 		std::unordered_map<SDL_Keycode, std::unique_ptr<Command>> m_commands;
 		std::unordered_map<WORD, std::unique_ptr<Command>> m_controllerCommands;
 	};
-
 }

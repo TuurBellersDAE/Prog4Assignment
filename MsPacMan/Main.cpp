@@ -27,10 +27,17 @@
 //#include "Observer.h"
 #include "GameObserver.h"
 
+#include "SDLSoundSystem.h"
+#include "ServiceLocator.h"
+
 //#include <steam_api.h>
 
 void load()
 {
+	dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_eat_dot.wav");
+	dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_death.wav");
+
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
 	auto backGroundImage = std::make_shared<dae::GameObject>();
@@ -62,6 +69,11 @@ void load()
 	auto controllerKeybindsText = std::make_shared<dae::GameObject>();
 	controllerKeybindsText->AddComponent<dae::TextComponent>("D-Pad: Move mrPacMan, X inflict self harm, A and B to score points", font, glm::vec3(0, 80, 0));
 	scene.Add(controllerKeybindsText);
+
+	auto soundKeybindsText = std::make_shared<dae::GameObject>();
+	soundKeybindsText->AddComponent<dae::TextComponent>("Score and Damage plays a sound", font, glm::vec3(0, 100, 0));
+	scene.Add(soundKeybindsText);
+
 
 	// Create a text object for msPacMan and mrPacMan
 	auto msPacManScoreText = std::make_shared<dae::GameObject>();

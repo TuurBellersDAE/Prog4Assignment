@@ -4,6 +4,7 @@
 #include "ScoreComponent.h"
 #include "HealthComponent.h"
 #include <iostream>
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -20,6 +21,7 @@ namespace dae
 		GameObject* m_pGameObject;
 	};
 
+#pragma region MoveCommands
 	class MoveCommand final : public GameObjectCommand
 	{
 	public:
@@ -173,6 +175,7 @@ namespace dae
             }
         }
     };
+#pragma endregion
 
 	class ScoreCommand final : public GameObjectCommand 
 	{
@@ -187,6 +190,7 @@ namespace dae
 				if (scoreComponent)
 				{
 					scoreComponent->AddScore(m_Score);
+					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_eat_dot.wav", 0.5f);
 				}
 			}
 		}
@@ -208,6 +212,7 @@ namespace dae
 				if (healthComponent)
 				{
 					healthComponent->TakeDamage(m_Damage);
+					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_death.wav", 0.5f);
 				}
 			}
 		}
