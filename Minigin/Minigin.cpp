@@ -27,7 +27,7 @@
 SDL_Window* g_window{};
 SDL_GLContext g_context;
 
-#include <steam_api.h>
+//#include <steam_api.h>
 
 void PrintSDLVersion()
 {
