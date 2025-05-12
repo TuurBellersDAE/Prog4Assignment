@@ -22,6 +22,9 @@
     <Filter Include="Commands">
       <UniqueIdentifier>{87e4609d-dce8-45a8-94c9-351b3b96a26e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CharacterState">
+      <UniqueIdentifier>{64b2eba6-1494-4686-aac7-0d53a3710a8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -39,6 +42,12 @@
     <ClCompile Include="GameObserver.cpp">
       <Filter>Observers</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerControllerComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MsPacManState.cpp">
+      <Filter>CharacterState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObjectCommand.h">
@@ -52,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="GameObserver.h">
       <Filter>Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerControllerComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MsPacManState.h">
+      <Filter>CharacterState</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

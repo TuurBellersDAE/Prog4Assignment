@@ -10,6 +10,7 @@ namespace dae
 	public:
 		void Play(const std::string& /*soundFile*/, const float /*volume*/) override {}
 		void LoadSound(const std::string& /*soundFile*/) override {}
+		void StopAllSounds() override {}
 	};
 
 	class ServiceLocator final : public Singleton<ServiceLocator>

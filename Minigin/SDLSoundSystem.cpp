@@ -1,19 +1,19 @@
 #include "SDLSoundSystem.h"
-#include "..\SDL2_mixer\Include\SDL_mixer.h"
 #include <unordered_map>
 #include <queue>
 #include <mutex>
 #include <condition_variable>
 #include <thread>
 #include <iostream>
-#include <stdexcept>
+
+#include "..\SDL2_mixer\Include\SDL_mixer.h"
 
 class dae::SDLSoundSystem::Impl
 {
 public:
 	Impl()
 	{
-		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
 		{
 			throw std::runtime_error("Failed to initialize SDL_mixer: " + std::string(Mix_GetError()));
 		}
@@ -89,7 +89,7 @@ private:
 	{
 		while (true)
 		{
-			SoundJob job;
+			SoundJob job{};
 
 			{
 				std::unique_lock<std::mutex> lock(m_QueueMutex);
@@ -98,8 +98,12 @@ private:
 				if (!m_Running && m_SoundQueue.empty())
 					break;
 
-				job = m_SoundQueue.front();
-				m_SoundQueue.pop();
+				if (!m_SoundQueue.empty())
+				{
+					job = m_SoundQueue.front();
+					m_SoundQueue.pop();
+				}
+				else continue;
 			}
 
 			if (job.chunk)
@@ -107,8 +111,10 @@ private:
 				Mix_VolumeChunk(job.chunk, job.volume);
 				Mix_PlayChannel(-1, job.chunk, 0);
 			}
+
 		}
 	}
+
 
 	void CleanupSounds()
 	{
@@ -132,14 +138,15 @@ dae::SDLSoundSystem::~SDLSoundSystem() = default;
 
 void dae::SDLSoundSystem::LoadSound(const std::string& soundFile)
 {
-	std::cout << "Loading sound: " << soundFile << std::endl;
 	m_Impl->LoadSound(soundFile);
-	std::cout << "Sound loaded successfully: " << soundFile << std::endl;
 }
 
 void dae::SDLSoundSystem::Play(const std::string& soundFile, float volume)
 {
-	std::cout << "Playing sound: " << soundFile << " at volume: " << volume << std::endl;
 	m_Impl->Play(soundFile, volume);
-	std::cout << "Sound played successfully: " << soundFile << std::endl;
+}
+
+void dae::SDLSoundSystem::StopAllSounds()
+{
+	m_Impl->StopAll();
 }

@@ -8,7 +8,7 @@ namespace dae
 {
 	class GameObject;
 	class TextComponent;
-	
+
 	class FPSComponent : public Component
 	{
 	public:
@@ -25,10 +25,11 @@ namespace dae
 		std::string GetStringFPS() const;
 		float GetFPS() const { return m_FPS; }
 
-		//void SetTextComponent(TextComponent* textComponent) { m_TextComponent = textComponent; }
-
 	private:
+		void TriggerBreakpoint(); // Method to trigger a breakpoint
+
 		float m_FPS;
+		float m_PreviousFPS; // Store the previous FPS
 		float m_FrameCount;
 		float m_TimeAccumulator;
 		std::chrono::time_point<std::chrono::steady_clock> m_LastTime;

@@ -38,27 +38,27 @@ namespace dae
 			}
 		}
 
-		void Stop() override
-		{
-			auto gameObject = GetGameObject();
-			if (gameObject)
-			{
-				auto currentDirection = gameObject->GetDirection();
-
-				if (m_Direction.x != 0.f && currentDirection.x == m_Direction.x)
-				{
-					gameObject->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
-				}
-				else if (m_Direction.y != 0.f && currentDirection.y == m_Direction.y)
-				{
-					gameObject->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
-				}
-				else if (m_Direction.z != 0.f && currentDirection.z == m_Direction.z)
-				{
-					gameObject->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
-				}
-			}
-		}
+		//void Stop() override
+		//{
+		//	auto gameObject = GetGameObject();
+		//	if (gameObject)
+		//	{
+		//		auto currentDirection = gameObject->GetDirection();
+		//
+		//		if (m_Direction.x != 0.f && currentDirection.x == m_Direction.x)
+		//		{
+		//			gameObject->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
+		//		}
+		//		else if (m_Direction.y != 0.f && currentDirection.y == m_Direction.y)
+		//		{
+		//			gameObject->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
+		//		}
+		//		else if (m_Direction.z != 0.f && currentDirection.z == m_Direction.z)
+		//		{
+		//			gameObject->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
+		//		}
+		//	}
+		//}
 
 	private:
 		glm::vec3 m_Direction;
@@ -80,16 +80,16 @@ namespace dae
             }
         }
 
-        void Stop() override
-        {
-			auto gameObject = GetGameObject();
-            if (gameObject)
-            {
-                auto direction = gameObject->GetDirection();
-                if (direction.x < 0.f)
-                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
-            }
-        }
+        //void Stop() override
+        //{
+		//	auto gameObject = GetGameObject();
+        //    if (gameObject)
+        //    {
+        //        auto direction = gameObject->GetDirection();
+        //        if (direction.x < 0.f)
+        //            gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+        //    }
+        //}
     };
 
     class MoveRightCommand final : public GameObjectCommand {
@@ -108,16 +108,16 @@ namespace dae
             }
         }
 
-        void Stop() override
-        {
-			auto gameObject = GetGameObject();
-            if (gameObject)
-            {
-                auto direction = gameObject->GetDirection();
-                if (direction.x > 0.f)
-                    gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
-            }
-        }
+        //void Stop() override
+        //{
+		//	auto gameObject = GetGameObject();
+        //    if (gameObject)
+        //    {
+        //        auto direction = gameObject->GetDirection();
+        //        if (direction.x > 0.f)
+        //            gameObject->SetDirection(glm::vec3(0.f, direction.y, direction.z));
+        //    }
+        //}
     };
 
     class MoveUpCommand final : public GameObjectCommand {
@@ -136,16 +136,16 @@ namespace dae
             }
         }
 
-        void Stop() override
-		{
-			auto gameObject = GetGameObject();
-            if (gameObject)
-            {
-                auto direction = gameObject->GetDirection();
-                if (direction.y < 0.f)
-                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
-            }
-        }
+        //void Stop() override
+		//{
+		//	auto gameObject = GetGameObject();
+        //    if (gameObject)
+        //    {
+        //        auto direction = gameObject->GetDirection();
+        //        if (direction.y < 0.f)
+        //            gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+        //    }
+        //}
     };
 
     class MoveDownCommand final : public GameObjectCommand {
@@ -164,16 +164,16 @@ namespace dae
             }
         }
 
-        void Stop() override
-		{
-			auto gameObject = GetGameObject();
-            if (gameObject)
-            {
-                auto direction = gameObject->GetDirection();
-                if (direction.y > 0.f)
-                    gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
-            }
-        }
+        //void Stop() override
+		//{
+		//	auto gameObject = GetGameObject();
+        //    if (gameObject)
+        //    {
+        //        auto direction = gameObject->GetDirection();
+        //        if (direction.y > 0.f)
+        //            gameObject->SetDirection(glm::vec3(direction.x, 0.f, direction.z));
+        //    }
+        //}
     };
 #pragma endregion
 

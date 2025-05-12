@@ -1,99 +1,135 @@
+// InputManager.cpp
 #define WIN32_LEAN_AND_MEAN
-#include <SDL.h>
 #include "InputManager.h"
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include <iostream> // For debug output
+#include <windows.h>
+#include <XInput.h>
 
-#pragma comment(lib, "Xinput9_1_0.lib")
-
-void dae::InputManager::RegisterKeyCommand(SDL_Keycode key, std::unique_ptr<Command> command)
+namespace dae
 {
-	m_commands[key] = std::move(command);
-}
-
-void dae::InputManager::RegisterControllerCommand(WORD button, std::unique_ptr<Command> command)
-{
-	m_controllerCommands[button] = std::move(command);
-}
-
-void dae::InputManager::UnregisterCommand(SDL_Keycode key)
-{
-	m_commands.erase(key);
-}
-
-bool dae::InputManager::ProcessInput()
-{
-	SDL_Event e;
-	while (SDL_PollEvent(&e))
+	// Private implementation class
+	class InputManagerImpl
 	{
-		if (e.type == SDL_QUIT)
+	public:
+		void RegisterKeyCommand(SDL_Keycode key, std::unique_ptr<Command> command)
 		{
-			return false;
-		}
-		if (e.type == SDL_KEYDOWN)
-		{
-			auto it = m_commands.find(e.key.keysym.sym);
-			if (it != m_commands.end())
-			{
-				it->second->Execute();
-			}
-		}
-		if (e.type == SDL_KEYUP)
-		{
-			auto it = m_commands.find(e.key.keysym.sym);
-			if (it != m_commands.end())
-			{
-				it->second->Stop(); // Assuming you have a Stop method in your Command class
-			}
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN)
-		{
-			// Handle mouse button down events if needed
+			m_Commands[key] = std::move(command);
 		}
 
-		ImGui_ImplSDL2_ProcessEvent(&e);
+		void RegisterControllerCommand(int controllerId, ControllerButton button, std::unique_ptr<Command> command)
+		{
+			m_ControllerCommands[controllerId][static_cast<WORD>(button)] = std::move(command);
+		}
+
+		void UnregisterKeyCommand(SDL_Keycode key)
+		{
+			m_Commands.erase(key);
+		}
+
+		void ProcessKeyInput(const SDL_Event& e)
+		{
+			if (e.type == SDL_KEYDOWN)
+			{
+				auto it = m_Commands.find(e.key.keysym.sym);
+				if (it != m_Commands.end())
+				{
+					it->second->Execute();
+				}
+			}
+			else if (e.type == SDL_KEYUP)
+			{
+				auto it = m_Commands.find(e.key.keysym.sym);
+				if (it != m_Commands.end())
+				{
+					it->second->Stop();
+				}
+			}
+		}
+
+		void ProcessControllerInput()
+		{
+			DWORD dwResult;
+			for (DWORD i = 0; i < XUSER_MAX_COUNT; i++) // Loop through all possible controllers
+			{
+				XINPUT_STATE state;
+				ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+				// Get the state of the controller from XInput
+				dwResult = XInputGetState(i, &state);
+
+				if (dwResult == ERROR_SUCCESS)
+				{
+					// Process commands for this controller
+					auto it = m_ControllerCommands.find(i);
+					if (it != m_ControllerCommands.end())
+					{
+						for (const auto& [button, command] : it->second)
+						{
+							if (state.Gamepad.wButtons & button)
+							{
+								command->Execute();
+							}
+							else
+							{
+								command->Stop();
+							}
+						}
+					}
+				}
+			}
+		}
+
+	private:
+		std::unordered_map<SDL_Keycode, std::unique_ptr<Command>> m_Commands; // Key commands
+		std::unordered_map<int, std::unordered_map<WORD, std::unique_ptr<Command>>> m_ControllerCommands; // Controller commands by controller ID
+	};
+
+
+	// InputManager implementation
+	InputManager::InputManager()
+		: m_pImpl(std::make_unique<InputManagerImpl>())
+	{
 	}
 
-	ProcessControllerInput();
+	InputManager::~InputManager() = default;
 
-	return true;
-}
-
-void dae::InputManager::ProcessControllerInput()
-{
-	DWORD dwResult;
-	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
+	void InputManager::RegisterKeyCommand(SDL_Keycode key, std::unique_ptr<Command> command)
 	{
-		XINPUT_STATE state;
-		ZeroMemory(&state, sizeof(XINPUT_STATE));
+		m_pImpl->RegisterKeyCommand(key, std::move(command)); // Delegate to the implementation
+	}
 
-		// Get the state of the controller from XInput
-		dwResult = XInputGetState(i, &state);
+	void InputManager::RegisterControllerCommand(int controllerId, ControllerButton button, std::unique_ptr<Command> command)
+	{
+		m_pImpl->RegisterControllerCommand(controllerId, button, std::move(command)); // Delegate to the implementation
+	}
 
-		if (dwResult == ERROR_SUCCESS)
+	void InputManager::UnregisterCommand(SDL_Keycode key)
+	{
+		m_pImpl->UnregisterKeyCommand(key); // Delegate to the implementation
+	}
+
+	bool InputManager::ProcessInput()
+	{
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
-			// Controller is connected
-			std::cout << "Controller " << i << " connected" << std::endl;
-			std::cout << "Buttons pressed: " << state.Gamepad.wButtons << std::endl;
-			for (const auto& [button, command] : m_controllerCommands)
+			if (e.type == SDL_QUIT)
 			{
-				if (state.Gamepad.wButtons & button)
-				{
-					std::cout << "Button pressed: " << button << std::endl;
-					command->Execute();
-				}
-				else
-				{
-					command->Stop();
-				}
+				return false;
 			}
+
+			// Delegate key input processing to the implementation
+			m_pImpl->ProcessKeyInput(e);
+
+			ImGui_ImplSDL2_ProcessEvent(&e);
 		}
-		else
-		{
-			// Controller is not connected
-			//std::cout << "Controller " << i << " not connected, error code: " << dwResult << std::endl;
-		}
+
+		// Delegate controller input processing to the implementation
+		m_pImpl->ProcessControllerInput();
+
+		return true;
 	}
 }

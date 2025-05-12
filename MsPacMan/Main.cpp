@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <SDL.h>
 
 #if _DEBUG
@@ -20,6 +19,8 @@
 #include "RotationComponent.h"
 #include "HealthComponent.h"
 #include "ScoreComponent.h"
+#include "PlayerControllerComponent.h"
+#include "SpriteAnimatorComponent.h"
 
 #include "InputManager.h"
 #include "GameObjectCommand.h"
@@ -34,9 +35,9 @@
 
 void load()
 {
-	dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
-	dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_eat_dot.wav");
-	dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_death.wav");
+	//dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	//dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_eat_dot.wav");
+	//dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_death.wav");
 
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
@@ -94,14 +95,22 @@ void load()
 	auto& msPacManScoreComp = msPacMan->AddComponent<dae::ScoreComponent>();
 	msPacManScoreComp.BindTextComponent(msPacManScoreText->GetComponentPtr<dae::TextComponent>());
 	msPacManHealthComp.BindTextComponent(msPacManHealthText->GetComponentPtr<dae::TextComponent>());
+	msPacMan->AddComponent<dae::PlayerControllerComponent>(0); // Assign to controller 0
 
 	auto mrPacMan = std::make_shared<dae::GameObject>();
-	mrPacMan->AddComponent<dae::RenderComponent>("mrPacMan.png", glm::vec3(80, 180, 0));
+	mrPacMan->SetWorldPosition(glm::vec3(80, 180, 0));
+	//mrPacMan->AddComponent<dae::RenderComponent>("mrPacMan.png", glm::vec3(80, 180, 0));
+	mrPacMan->AddComponent<dae::SpriteAnimatorComponent>("MsPacMan_Down.png", 15, 15, 4, 0.2f); // 0.2 seconds per frame
 	msPacMan->SetSpeed(200.f);
 	auto& mrPacManHealthComp = mrPacMan->AddComponent<dae::HealthComponent>();
 	auto& mrPacManScoreComp = mrPacMan->AddComponent<dae::ScoreComponent>();
 	mrPacManScoreComp.BindTextComponent(mrPacManScoreText->GetComponentPtr<dae::TextComponent>());
 	mrPacManHealthComp.BindTextComponent(mrPacManHealthText->GetComponentPtr<dae::TextComponent>());
+	mrPacMan->AddComponent<dae::PlayerControllerComponent>(1); // Assign to controller 1
+
+	auto pGameObject = std::make_shared<dae::GameObject>();
+	pGameObject->AddComponent<dae::SpriteAnimatorComponent>("MsPacMan_Down.png", 15, 15, 4, 0.2f); // 0.2 seconds per frame
+
 
 	// Add msPacMan and mrPacMan to the scene
 	scene.Add(msPacMan);
@@ -110,6 +119,7 @@ void load()
 	scene.Add(msPacManHealthText);
 	scene.Add(mrPacManScoreText);
 	scene.Add(mrPacManHealthText);
+	scene.Add(pGameObject);
 
 	//// Create observer for health and score for msPacMan
 	auto msPacManHealthObserver = msPacMan->AddObserver(std::make_unique<dae::HealthObserver>());
@@ -129,24 +139,26 @@ void load()
 	mrPacManScoreComp.m_Subject.AddObserver(mrPacManScoreObserver);
 	mrPacManScoreComp.m_Subject.Notify(*mrPacMan, dae::Event::PLAYER_SCORED);
 
-	// Register commands with the InputManager singleton
-	auto& inputManager = dae::InputManager::GetInstance();
-	inputManager.RegisterKeyCommand(SDLK_a, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
-	inputManager.RegisterKeyCommand(SDLK_d, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
-	inputManager.RegisterKeyCommand(SDLK_w, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
-	inputManager.RegisterKeyCommand(SDLK_s, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
-	inputManager.RegisterKeyCommand(SDLK_z, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
-	inputManager.RegisterKeyCommand(SDLK_x, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
-	inputManager.RegisterKeyCommand(SDLK_c, std::make_unique<dae::DamageCommand>(msPacMan.get(), 10));
+	
 
-	// Register controller commands for mrPacMan
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_DPAD_LEFT, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_DPAD_RIGHT, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_DPAD_UP, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_DPAD_DOWN, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_A, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_B, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
-	inputManager.RegisterControllerCommand(XINPUT_GAMEPAD_X, std::make_unique<dae::DamageCommand>(mrPacMan.get(), 10));
+	//// Register commands with the InputManager singleton
+	//auto& inputManager = dae::InputManager::GetInstance();
+	//inputManager.RegisterKeyCommand(SDLK_a, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
+	//inputManager.RegisterKeyCommand(SDLK_d, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
+	//inputManager.RegisterKeyCommand(SDLK_w, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
+	//inputManager.RegisterKeyCommand(SDLK_s, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
+	//inputManager.RegisterKeyCommand(SDLK_z, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
+	//inputManager.RegisterKeyCommand(SDLK_x, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
+	//inputManager.RegisterKeyCommand(SDLK_c, std::make_unique<dae::DamageCommand>(msPacMan.get(), 10));
+	//
+	//// Register controller commands for mrPacMan
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadLeft, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadRight, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadUp, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadDown, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonA, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonB, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
+	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonX, std::make_unique<dae::DamageCommand>(mrPacMan.get(), 10));
 }
 
 int main(int, char* [])
