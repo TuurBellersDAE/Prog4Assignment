@@ -18,9 +18,8 @@
 #include <SDL_syswm.h>
 
 #include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"   //Don`t know why i cant just #include "imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdl2.h"      //Don`t know why i cant just #include "imgui_impl_sdl2.h
-//#include "../../imgui-plot-master/include/imgui_plot.h"
+#include "backends/imgui_impl_opengl3.h"  
+#include "backends/imgui_impl_sdl2.h"     
 
 //#include <numeric>
 
@@ -28,6 +27,8 @@ SDL_Window* g_window{};
 SDL_GLContext g_context;
 
 //#include <steam_api.h>
+
+#include "GameStateManager.h"
 
 void PrintSDLVersion()
 {
@@ -70,8 +71,8 @@ dae::Minigin::Minigin(const std::string& dataPath)
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
 		480,
+		512,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr)
@@ -121,6 +122,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
+	auto& gameStateManager = GameStateManager::GetInstance();
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
@@ -153,7 +155,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		//SteamAPI_RunCallbacks();
 
 		sceneManager.Update();
+		gameStateManager.Update();
+
 		renderer.Render();
+		gameStateManager.Render();
 
 		const auto frameEndTime = std::chrono::high_resolution_clock::now();
 		const auto frameTime = frameEndTime - frameStartTime;

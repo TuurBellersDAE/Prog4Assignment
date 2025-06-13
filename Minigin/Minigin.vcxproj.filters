@@ -138,6 +138,12 @@
     <ClInclude Include="SpriteAnimatorComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="FSMBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -235,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="TextureComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

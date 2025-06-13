@@ -1,33 +1,28 @@
 #include "SceneManager.h"
 #include "Scene.h"
-
-#include <sstream> 
+#include <sstream>
 #include <chrono>
-#include <algorithm> // Added this include for std::sort
+#include <algorithm>
 #include <numeric>
-
 #include <SDL_syswm.h>
-
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "../../imgui-plot-master/include/imgui_plot.h"
 
-//SDL_GLContext g_context;
-
 void dae::SceneManager::Update()
 {
-	for(auto& scene : m_scenes)
+	if (m_pActiveScene)
 	{
-		scene->Update();
+		m_pActiveScene->Update();
 	}
 }
 
 void dae::SceneManager::Render()
 {
-	for (const auto& scene : m_scenes)
+	if (m_pActiveScene)
 	{
-		scene->Render();
+		m_pActiveScene->Render();
 	}
 
 	if (m_isIMGUIActive)
@@ -37,13 +32,84 @@ void dae::SceneManager::Render()
 	}
 }
 
-dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
+std::shared_ptr<dae::Scene> dae::SceneManager::CreateScene(const std::string& name)
 {
-	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
+	// Check for duplicate scene name
+	auto it = std::find_if(m_scenes.begin(), m_scenes.end(),
+		[&name](const std::shared_ptr<Scene>& scene)
+		{
+			return scene->GetName() == name;
+		});
+
+	if (it != m_scenes.end())
+	{
+		// Scene with this name already exists, return it and set as active
+		m_pActiveScene = *it;
+		return *it;
+	}
+
+	// No duplicate found, create new scene
+	auto scene = std::shared_ptr<Scene>(new Scene(name));
 	m_scenes.push_back(scene);
-	return *scene;
+	m_pActiveScene = scene; // Make the new scene active by default
+	return scene;
 }
 
+
+std::shared_ptr<dae::Scene> dae::SceneManager::GetActiveScene() const
+{
+	if (!m_pActiveScene)
+	{
+		throw std::runtime_error("No active scene found.");
+	}
+	return m_pActiveScene;
+}
+
+std::shared_ptr<dae::Scene> dae::SceneManager::GetScene(const std::string& name) const
+{
+	for (const auto& scene : m_scenes)
+	{
+		if (scene->GetName() == name)
+		{
+			return scene;
+		}
+	}
+	throw std::runtime_error("Scene with name '" + name + "' not found.");
+}
+
+void dae::SceneManager::SetActiveScene(const std::string& name)
+{
+	if (m_pActiveScene) {
+		m_pActiveScene->RemoveAll(); // Unload previous scene's resources
+	}
+	for (const auto& scene : m_scenes)
+	{
+		if (scene->GetName() == name)
+		{
+			m_pActiveScene = scene;
+			return;
+		}
+	}
+	throw std::runtime_error("Scene with name '" + name + "' not found.");
+}
+
+void dae::SceneManager::SetActiveScene(Scene* scene)
+{
+	if (!scene)
+	{
+		throw std::runtime_error("Cannot set active scene to a null pointer.");
+	}
+	auto it = std::find_if(m_scenes.begin(), m_scenes.end(),
+		[scene](const std::shared_ptr<Scene>& s) { return s.get() == scene; });
+	if (it != m_scenes.end())
+	{
+		m_pActiveScene = *it;
+	}
+	else
+	{
+		throw std::runtime_error("Scene not found in the manager.");
+	}
+}
 
 void dae::SceneManager::DisplayTrashTheCache()
 {

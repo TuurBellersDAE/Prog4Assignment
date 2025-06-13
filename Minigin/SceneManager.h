@@ -11,16 +11,23 @@ namespace dae
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
-		Scene& CreateScene(const std::string& name);
+		std::shared_ptr<Scene> CreateScene(const std::string& name);
+		std::shared_ptr<Scene> GetActiveScene() const;
+		std::shared_ptr<Scene> GetScene(const std::string& name) const;
+
+		void SetActiveScene(const std::string& name);
+		void SetActiveScene(Scene* scene);
 
 		void Update();
 		void Render();
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::shared_ptr<Scene>> m_scenes;
+		std::shared_ptr<Scene> m_pActiveScene{ nullptr };
 
-		bool m_isIMGUIActive{false};
+		bool m_isIMGUIActive{ false };
 
 		void DisplayTrashTheCache();
 
@@ -44,3 +51,4 @@ namespace dae
 		bool m_GameObject3DAltTrashCasheDataCalculated{};
 	};
 }
+

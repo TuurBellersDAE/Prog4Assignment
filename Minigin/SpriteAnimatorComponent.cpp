@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "Timer.h"
+#include <iostream>
 
 namespace dae
 {
@@ -37,7 +38,7 @@ namespace dae
 			// Calculate the source rectangle for the current frame
 			SDL_Rect srcRect{
 				m_CurrentFrame * m_FrameWidth, // Move to the next frame horizontally
-				0,                            // Assuming all frames are in a single row
+				m_CurrentRow * m_FrameHeight,                         
 				m_FrameWidth,
 				m_FrameHeight
 			};
@@ -53,8 +54,22 @@ namespace dae
 
 			// Render the current frame
 			Renderer::GetInstance().RenderTexture(*m_Texture, dstRect, srcRect);
+
+#ifdef _DEBUG
+			// Draw a red bounding box around the sprite for debugging
+			SDL_Renderer* sdlRenderer = Renderer::GetInstance().GetSDLRenderer();
+			if (sdlRenderer)
+			{
+				SDL_SetRenderDrawColor(sdlRenderer, 255, 0, 0, 255); // Red color
+				SDL_RenderDrawRect(sdlRenderer, &dstRect);
+				// Optionally reset color to white (255,255,255,255) if needed elsewhere
+			}
+
+			std::cout << "Width: " << m_FrameWidth << ", Height: " << m_FrameHeight << std::endl;
+#endif
 		}
 	}
+
 
 	void SpriteAnimatorComponent::Texture(const std::string& path)
 	{

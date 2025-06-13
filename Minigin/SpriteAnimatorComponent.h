@@ -19,6 +19,8 @@ namespace dae
 
 		void Texture(const std::string& path);
 
+		void SetCurrentRow(int row) { m_CurrentRow = row; }
+
 	private:
 		std::shared_ptr<Texture2D> m_Texture;
 		int m_FrameWidth;
@@ -27,6 +29,8 @@ namespace dae
 		float m_FrameTime;
 		float m_ElapsedTime;
 		int m_CurrentFrame;
+
+		int m_CurrentRow = 0; // For multi-row sprites
 	};
 }
 

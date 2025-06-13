@@ -8,6 +8,7 @@
 #endif
 
 #include "Minigin.h"
+/*
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "GameObject.h"
@@ -21,6 +22,10 @@
 #include "ScoreComponent.h"
 #include "PlayerControllerComponent.h"
 #include "SpriteAnimatorComponent.h"
+#include "GridComponent.h"
+#include "GhostAIControllerComponent.h"
+
+#include "GhostBehavior.h"
 
 #include "InputManager.h"
 #include "GameObjectCommand.h"
@@ -29,51 +34,53 @@
 #include "GameObserver.h"
 
 #include "SDLSoundSystem.h"
-#include "ServiceLocator.h"
+#include "ServiceLocator.h"*/
 
 //#include <steam_api.h>
 
+#include "GameStateManager.h"
+#include "GameState.h"
+
 void load()
 {
-	//dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
-	//dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_eat_dot.wav");
-	//dae::ServiceLocator::GetInstance().GetSoundSystem().LoadSound("../Data/ms_death.wav");
+	// Initialize the game state manager
+	auto& gameStateManager = dae::GameStateManager::GetInstance();
+	// Register the playing state
+	gameStateManager.RegisterState("Playing", std::make_unique<dae::PlayingState>("Playing"));
+	gameStateManager.SetState("Playing");
+	/*dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	auto& soundSystem = dae::ServiceLocator::GetInstance().GetSoundSystem();
+	soundSystem.LoadSound("../Data/ms_eat_dot.wav");
+	soundSystem.LoadSound("../Data/ms_death.wav");
+	soundSystem.LoadSound("../Data/SFX/credit.wav");
 
-	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
+	std::shared_ptr<dae::Scene> scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
 	auto backGroundImage = std::make_shared<dae::GameObject>();
 	backGroundImage->AddComponent<dae::RenderComponent>("background.tga", glm::vec3(0, 0, 0));
-	scene.Add(backGroundImage);
-
-	auto logo = std::make_shared<dae::GameObject>();
-	logo->AddComponent<dae::RenderComponent>("logo.tga", glm::vec3(216, 180, 0));
-	scene.Add(logo);
+	scene->Add(backGroundImage);
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto title = std::make_shared<dae::GameObject>();
-	title->AddComponent<dae::TextComponent>("Programming 4 Assignment", font, glm::vec3(80, 20, 0));
-	scene.Add(title);
-
 	auto fps = std::make_shared<dae::GameObject>();
 	auto& fpsComp = fps->AddComponent<dae::FPSComponent>();
 	auto& fpsTextComp = fps->AddComponent<dae::TextComponent>("", font, glm::vec3(0, 0, 0));
 	fpsTextComp.SetText("FPS: " + fpsComp.GetStringFPS());
-	scene.Add(fps);
+	scene->Add(fps);
 
 	font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
 
 	//Keybinds text objects
 	auto keyboarKeybindsText = std::make_shared<dae::GameObject>();
 	keyboarKeybindsText->AddComponent<dae::TextComponent>("WASD: Move msPacMan, C inflict self harm, Z and X to score points", font, glm::vec3(0, 60, 0));
-	scene.Add(keyboarKeybindsText);
+	scene->Add(keyboarKeybindsText);
 
 	auto controllerKeybindsText = std::make_shared<dae::GameObject>();
 	controllerKeybindsText->AddComponent<dae::TextComponent>("D-Pad: Move mrPacMan, X inflict self harm, A and B to score points", font, glm::vec3(0, 80, 0));
-	scene.Add(controllerKeybindsText);
+	scene->Add(controllerKeybindsText);
 
 	auto soundKeybindsText = std::make_shared<dae::GameObject>();
 	soundKeybindsText->AddComponent<dae::TextComponent>("Score and Damage plays a sound", font, glm::vec3(0, 100, 0));
-	scene.Add(soundKeybindsText);
+	scene->Add(soundKeybindsText);
 
 
 	// Create a text object for msPacMan and mrPacMan
@@ -87,39 +94,48 @@ void load()
 	auto mrPacManHealthText = std::make_shared<dae::GameObject>();
 	mrPacManHealthText->AddComponent<dae::TextComponent>(" ", font, glm::vec3(0, 180, 0));
 
+	// Create a map object with a grid component
+	auto pMap = std::make_shared<dae::GameObject>();
+	auto& gridComp = pMap->AddComponent<dae::GridComponent>();
+	gridComp.LoadGrid("../Data/MsPacMan_Grid_01.txt");
+	gridComp.SetCellSize(16);
+	pMap->AddComponent<dae::RenderComponent>("MsPacMan_Map_01.png", glm::vec3(0, 0, 0));
+
 	// Create msPacMan and mrPacMan
 	auto msPacMan = std::make_shared<dae::GameObject>();
-	msPacMan->AddComponent<dae::RenderComponent>("msPacMan.png", glm::vec3(80, 150, 0));
-	msPacMan->SetSpeed(100.f);
+	msPacMan->AddComponent<dae::SpriteAnimatorComponent>("MsPacMan_Down16.png", 32, 32, 4, 0.2f); // 0.2 seconds per frame
+	msPacMan->SetSpeed(75.f);
 	auto& msPacManHealthComp = msPacMan->AddComponent<dae::HealthComponent>();
 	auto& msPacManScoreComp = msPacMan->AddComponent<dae::ScoreComponent>();
 	msPacManScoreComp.BindTextComponent(msPacManScoreText->GetComponentPtr<dae::TextComponent>());
 	msPacManHealthComp.BindTextComponent(msPacManHealthText->GetComponentPtr<dae::TextComponent>());
-	msPacMan->AddComponent<dae::PlayerControllerComponent>(0); // Assign to controller 0
+	auto& msPacManControllerComp = msPacMan->AddComponent<dae::PlayerControllerComponent>(0, &gridComp, 32); // 16 is the sprite size
+	msPacManControllerComp.SetSpawnCell(14, 23); // Set spawn cell for msPacMan
 
-	auto mrPacMan = std::make_shared<dae::GameObject>();
-	mrPacMan->SetWorldPosition(glm::vec3(80, 180, 0));
-	//mrPacMan->AddComponent<dae::RenderComponent>("mrPacMan.png", glm::vec3(80, 180, 0));
-	mrPacMan->AddComponent<dae::SpriteAnimatorComponent>("MsPacMan_Down.png", 15, 15, 4, 0.2f); // 0.2 seconds per frame
-	msPacMan->SetSpeed(200.f);
-	auto& mrPacManHealthComp = mrPacMan->AddComponent<dae::HealthComponent>();
-	auto& mrPacManScoreComp = mrPacMan->AddComponent<dae::ScoreComponent>();
-	mrPacManScoreComp.BindTextComponent(mrPacManScoreText->GetComponentPtr<dae::TextComponent>());
-	mrPacManHealthComp.BindTextComponent(mrPacManHealthText->GetComponentPtr<dae::TextComponent>());
-	mrPacMan->AddComponent<dae::PlayerControllerComponent>(1); // Assign to controller 1
 
-	auto pGameObject = std::make_shared<dae::GameObject>();
-	pGameObject->AddComponent<dae::SpriteAnimatorComponent>("MsPacMan_Down.png", 15, 15, 4, 0.2f); // 0.2 seconds per frame
-
+	auto ghostBlinky = std::make_shared<dae::GameObject>();
+	ghostBlinky->AddComponent<dae::SpriteAnimatorComponent>("Blinky.png", 32, 32, 2, 0.2f); // Use Blinky's sprite
+	ghostBlinky->SetSpeed(50.f);
+	auto& blinkyHealthComp = ghostBlinky->AddComponent<dae::HealthComponent>();
+	auto& blinkyScoreComp = ghostBlinky->AddComponent<dae::ScoreComponent>();
+	blinkyScoreComp.BindTextComponent(mrPacManScoreText->GetComponentPtr<dae::TextComponent>());
+	blinkyHealthComp.BindTextComponent(mrPacManHealthText->GetComponentPtr<dae::TextComponent>());
+	auto& ghostAIControllerComp = ghostBlinky->AddComponent<dae::GhostAIControllerComponent>(
+		&gridComp,
+		msPacMan.get(),
+		std::make_unique<dae::BlinkyBehavior>(),
+		32
+	);
+	ghostAIControllerComp.SetSpawnCell(14, 23);
 
 	// Add msPacMan and mrPacMan to the scene
-	scene.Add(msPacMan);
-	scene.Add(mrPacMan);
-	scene.Add(msPacManScoreText);
-	scene.Add(msPacManHealthText);
-	scene.Add(mrPacManScoreText);
-	scene.Add(mrPacManHealthText);
-	scene.Add(pGameObject);
+	scene->Add(msPacMan);
+	scene->Add(ghostBlinky);
+	scene->Add(msPacManScoreText);
+	scene->Add(msPacManHealthText);
+	scene->Add(mrPacManScoreText);
+	scene->Add(mrPacManHealthText);
+	scene->Add(pMap);
 
 	//// Create observer for health and score for msPacMan
 	auto msPacManHealthObserver = msPacMan->AddObserver(std::make_unique<dae::HealthObserver>());
@@ -131,34 +147,13 @@ void load()
 	msPacManScoreComp.m_Subject.Notify(*msPacMan, dae::Event::PLAYER_SCORED);
 
 	//// Create observer for health and score for mrPacMan
-	auto mrPacManHealthObserver = mrPacMan->AddObserver(std::make_unique<dae::HealthObserver>());
-	mrPacManHealthComp.m_Subject.AddObserver(mrPacManHealthObserver);
-	mrPacManHealthObserver->OnNotify(*mrPacMan, dae::Event::PLAYER_HIT);
+	auto mrPacManHealthObserver = ghostBlinky->AddObserver(std::make_unique<dae::HealthObserver>());
+	blinkyHealthComp.m_Subject.AddObserver(mrPacManHealthObserver);
+	mrPacManHealthObserver->OnNotify(*ghostBlinky, dae::Event::PLAYER_HIT);
 
-	auto mrPacManScoreObserver = mrPacMan->AddObserver(std::make_unique<dae::ScoreObserver>());
-	mrPacManScoreComp.m_Subject.AddObserver(mrPacManScoreObserver);
-	mrPacManScoreComp.m_Subject.Notify(*mrPacMan, dae::Event::PLAYER_SCORED);
-
-	
-
-	//// Register commands with the InputManager singleton
-	//auto& inputManager = dae::InputManager::GetInstance();
-	//inputManager.RegisterKeyCommand(SDLK_a, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
-	//inputManager.RegisterKeyCommand(SDLK_d, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
-	//inputManager.RegisterKeyCommand(SDLK_w, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
-	//inputManager.RegisterKeyCommand(SDLK_s, std::make_unique<dae::MoveCommand>(msPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
-	//inputManager.RegisterKeyCommand(SDLK_z, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
-	//inputManager.RegisterKeyCommand(SDLK_x, std::make_unique<dae::ScoreCommand>(msPacMan.get(), 10));
-	//inputManager.RegisterKeyCommand(SDLK_c, std::make_unique<dae::DamageCommand>(msPacMan.get(), 10));
-	//
-	//// Register controller commands for mrPacMan
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadLeft, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(-1.f, 0.f, 0.f)));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadRight, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(1.f, 0.f, 0.f)));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadUp, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, -1.f, 0.f)));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::DPadDown, std::make_unique<dae::MoveCommand>(mrPacMan.get(), glm::vec3(0.f, 1.f, 0.f)));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonA, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonB, std::make_unique<dae::ScoreCommand>(mrPacMan.get(), 10));
-	//inputManager.RegisterControllerCommand(dae::ControllerButton::ButtonX, std::make_unique<dae::DamageCommand>(mrPacMan.get(), 10));
+	auto mrPacManScoreObserver = ghostBlinky->AddObserver(std::make_unique<dae::ScoreObserver>());
+	blinkyScoreComp.m_Subject.AddObserver(mrPacManScoreObserver);
+	blinkyScoreComp.m_Subject.Notify(*ghostBlinky, dae::Event::PLAYER_SCORED);*/
 }
 
 int main(int, char* [])
@@ -185,3 +180,4 @@ int main(int, char* [])
 }
 
 // Couldn't get the steam part to properly works and don't really know how to fix it yet.
+

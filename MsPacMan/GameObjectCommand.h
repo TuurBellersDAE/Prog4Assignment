@@ -5,6 +5,7 @@
 #include "HealthComponent.h"
 #include <iostream>
 #include "ServiceLocator.h"
+#include "PlayerControllerComponent.h"
 
 namespace dae
 {
@@ -34,31 +35,13 @@ namespace dae
 			auto gameObject = GetGameObject();
 			if (gameObject)
 			{
-                gameObject->SetDirection(m_Direction);
+				auto controller = gameObject->GetComponentPtr<PlayerControllerComponent>();
+				if (controller)
+				{
+					controller->SetPendingDirection(m_Direction);
+				}
 			}
 		}
-
-		//void Stop() override
-		//{
-		//	auto gameObject = GetGameObject();
-		//	if (gameObject)
-		//	{
-		//		auto currentDirection = gameObject->GetDirection();
-		//
-		//		if (m_Direction.x != 0.f && currentDirection.x == m_Direction.x)
-		//		{
-		//			gameObject->SetDirection(glm::vec3(0.f, currentDirection.y, currentDirection.z));
-		//		}
-		//		else if (m_Direction.y != 0.f && currentDirection.y == m_Direction.y)
-		//		{
-		//			gameObject->SetDirection(glm::vec3(currentDirection.x, 0.f, currentDirection.z));
-		//		}
-		//		else if (m_Direction.z != 0.f && currentDirection.z == m_Direction.z)
-		//		{
-		//			gameObject->SetDirection(glm::vec3(currentDirection.x, currentDirection.y, 0.f));
-		//		}
-		//	}
-		//}
 
 	private:
 		glm::vec3 m_Direction;
@@ -190,7 +173,7 @@ namespace dae
 				if (scoreComponent)
 				{
 					scoreComponent->AddScore(m_Score);
-					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_eat_dot.wav", 0.5f);
+					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_eat_dot.wav", 0.5f, false);
 				}
 			}
 		}
@@ -212,7 +195,7 @@ namespace dae
 				if (healthComponent)
 				{
 					healthComponent->TakeDamage(m_Damage);
-					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_death.wav", 0.5f);
+					ServiceLocator::GetInstance().GetSoundSystem().Play("../Data/ms_death.wav", 0.5f, false);
 				}
 			}
 		}

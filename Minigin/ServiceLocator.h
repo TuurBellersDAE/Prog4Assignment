@@ -8,7 +8,8 @@ namespace dae
 	class NullSoundSystem final : public SoundSystem
 	{
 	public:
-		void Play(const std::string& /*soundFile*/, const float /*volume*/) override {}
+		void Play(const std::string& /*soundFile*/, const float /*volume*/, bool /*loop*/) override {}
+		void StopLoop(const std::string& /*soundFile*/) override {}
 		void LoadSound(const std::string& /*soundFile*/) override {}
 		void StopAllSounds() override {}
 	};

@@ -84,6 +84,9 @@ namespace dae
 		glm::vec3 GetDirection() const;
 		float GetSpeed() const;
 		bool IsMoving() const;
+
+		void SetPendingDirection(const glm::vec3& dir) { m_PendingDirection = dir; }
+		glm::vec3 GetPendingDirection() const { return m_PendingDirection; }
 #pragma endregion
 
 #pragma region Observer Functions
@@ -110,6 +113,9 @@ namespace dae
 		bool m_IsMoving = false;
 
 		std::vector < std::unique_ptr<Observer>> m_pObservers;
+
+		glm::vec3 m_PendingDirection{ 0.f, 0.f, 0.f };
+
 	};
 
 #pragma region Template Implementations
