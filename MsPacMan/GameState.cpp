@@ -53,7 +53,6 @@ void dae::SinglePlayer::OnEnter()
 	OnEnter("");
 }
 
-
 void dae::SinglePlayer::OnEnter(const std::string& previousState)
 {
 	m_Scene = dae::SceneManager::GetInstance().CreateScene(m_SceneName);
@@ -562,7 +561,7 @@ void dae::MenuState::OnExit()
 void dae::MenuState::LoadMenuAssets()
 {
 
-	auto font = dae::ResourceManager::GetInstance().LoadFont("slkscr.ttf", 50);
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Pixel.ttf", 50);
 
 	const int windowWidth = 448;
 	const int windowHeight = 640;
