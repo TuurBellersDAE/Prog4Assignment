@@ -15,6 +15,7 @@
 #include "SpriteAnimatorComponent.h"
 #include "GridComponent.h"
 #include "GhostAIControllerComponent.h"
+#include "PowerPelletEatenComponent.h"
 
 #include "GhostBehavior.h"
 
@@ -116,6 +117,7 @@ void dae::PlayingState::LoadPlayingAssets()
 	msPacMan->SetSpeed(75.f);
 	auto& msPacManHealthComp = msPacMan->AddComponent<dae::HealthComponent>();
 	auto& msPacManScoreComp = msPacMan->AddComponent<dae::ScoreComponent>();
+	auto& msPacManPowerPelletComp = msPacMan->AddComponent<dae::PowerPelletEatenComponent>();
 	msPacManScoreComp.BindTextComponent(msPacManScoreText->GetComponentPtr<dae::TextComponent>());
 	msPacManHealthComp.BindTextComponent(msPacManHealthText->GetComponentPtr<dae::TextComponent>());
 	auto& msPacManControllerComp = msPacMan->AddComponent<dae::PlayerControllerComponent>(0, &gridComp, 32); // 16 is the sprite size
@@ -123,7 +125,7 @@ void dae::PlayingState::LoadPlayingAssets()
 
 
 	auto ghostBlinky = std::make_shared<dae::GameObject>();
-	ghostBlinky->AddComponent<dae::SpriteAnimatorComponent>("Blinky.png", 32, 32, 2, 0.2f); // Use Blinky's sprite
+	ghostBlinky->AddComponent<dae::SpriteAnimatorComponent>("GhostScared.png", 32, 32, 2, 0.2f); // Use Blinky's sprite
 	ghostBlinky->SetSpeed(50.f);
 	auto& ghostAIControllerComp = ghostBlinky->AddComponent<dae::GhostAIControllerComponent>(
 		&gridComp,
@@ -186,6 +188,11 @@ void dae::PlayingState::LoadPlayingAssets()
 	auto msPacManScoreObserver = msPacMan->AddObserver(std::make_unique<dae::ScoreObserver>());
 	msPacManScoreComp.m_Subject.AddObserver(msPacManScoreObserver);
 	msPacManScoreComp.m_Subject.Notify(*msPacMan, dae::Event::PLAYER_SCORED);
+
+	msPacManPowerPelletComp.m_Subject.AddObserver(&ghostAIControllerCompClyde);
+	msPacManPowerPelletComp.m_Subject.AddObserver(&ghostAIControllerCompInky);
+	msPacManPowerPelletComp.m_Subject.AddObserver(&ghostAIControllerCompPinky);
+	msPacManPowerPelletComp.m_Subject.AddObserver(&ghostAIControllerComp);
 }
 
 #pragma endregion

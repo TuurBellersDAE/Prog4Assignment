@@ -63,6 +63,12 @@
     <ClCompile Include="GameState.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
+    <ClCompile Include="GhostState.cpp">
+      <Filter>CharacterState</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerPelletEatenComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObjectCommand.h">
@@ -97,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="GhostState.h">
+      <Filter>CharacterState</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerPelletEatenComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

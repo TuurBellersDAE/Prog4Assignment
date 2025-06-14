@@ -9,7 +9,13 @@ namespace dae
 	{
 		PLAYER_HIT,
 		PLAYER_DIED,
-		PLAYER_SCORED
+		PLAYER_SCORED,
+
+		// Add more events as needed
+		GHOST_EATEN,
+		GHOST_FRIGHTENED,
+		GHOST_SCATTER,
+		GHOST_CHASE
 	};
 
 	class GameObject;

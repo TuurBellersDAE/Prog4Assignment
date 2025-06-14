@@ -7,6 +7,7 @@
 
 #include "SDLSoundSystem.h"
 #include "ServiceLocator.h"
+#include "PowerPelletEatenComponent.h"
 
 dae::PlayerControllerComponent::PlayerControllerComponent(GameObject* pOwner, int controllerId, GridComponent* pGrid, int spriteSize)
 	: Component(pOwner), m_ControllerId(controllerId), m_pGrid(pGrid), m_SpriteSize(spriteSize)
@@ -114,6 +115,11 @@ void dae::PlayerControllerComponent::Update()
 		if (auto scoreComp = owner->GetComponentPtr<ScoreComponent>())
 		{
 			scoreComp->AddScore(50);
+		}
+
+		if (auto ghostInteractionComp = owner->GetComponentPtr<PowerPelletEatenComponent>())
+		{
+			ghostInteractionComp->OnNotify(*owner, Event::GHOST_FRIGHTENED);
 		}
 	}
 

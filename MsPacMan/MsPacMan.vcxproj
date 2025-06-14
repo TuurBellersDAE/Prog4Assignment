@@ -185,12 +185,14 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GhostAIControllerComponent.cpp" />
     <ClCompile Include="GhostBehavior.cpp" />
+    <ClCompile Include="GhostState.cpp" />
     <ClCompile Include="GridComponent.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="GameObserver.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MsPacManState.cpp" />
     <ClCompile Include="PlayerControllerComponent.cpp" />
+    <ClCompile Include="PowerPelletEatenComponent.cpp" />
     <ClCompile Include="ScoreComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,12 +200,14 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GhostAIControllerComponent.h" />
     <ClInclude Include="GhostBehavior.h" />
+    <ClInclude Include="GhostState.h" />
     <ClInclude Include="GridComponent.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="GameObserver.h" />
     <ClInclude Include="MsPacManState.h" />
     <ClInclude Include="PathFinding.h" />
     <ClInclude Include="PlayerControllerComponent.h" />
+    <ClInclude Include="PowerPelletEatenComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
