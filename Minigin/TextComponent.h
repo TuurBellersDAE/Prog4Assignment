@@ -3,6 +3,7 @@
 #include <string>
 #include "Component.h"
 #include <glm.hpp>
+#include <SDL_ttf.h>
 
 namespace dae
 {
@@ -27,6 +28,12 @@ namespace dae
 		void SetPosition(glm::vec3 position);
 		void SetShow(bool show) { m_IsRendered = show; }
 
+		int GetTextWidth() const;
+		int GetTextHeight() const;
+		const std::string& GetText() const { return m_Text; }
+
+		void SetColor(const SDL_Color& color);
+
 	private:
 		bool m_NeedsUpdate;
 		bool m_IsRendered;
@@ -34,7 +41,7 @@ namespace dae
 		std::string m_Text;
 		std::shared_ptr<Font> m_Font;
 		std::shared_ptr<Texture2D> m_TextTexture;
-		//glm::vec3 m_Position;
+		SDL_Color m_Color{ 255, 255, 255, 255 }; // Default to white
 	};
 }
 

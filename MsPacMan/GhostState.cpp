@@ -5,7 +5,7 @@
 #include "SpriteAnimatorComponent.h"
 #include "Timer.h"
 
-#include <iostream> // For debug output if needed
+#include <iostream>
 
 void dae::GhostMoveAndAnimate(
 	GhostAIControllerComponent* controller,
@@ -135,13 +135,13 @@ void dae::GhostMoveAndAnimate(
 void dae::GhostChaseState::Update()
 {
 	auto* owner = m_Controller->GetOwner();
-	auto* player = m_Controller->GetPlayer();
+	auto player = m_Controller->GetPrimaryPlayer();
 	auto* grid = m_Controller->GetGrid();
 	auto* behavior = m_Controller->GetBehavior();
 	if (!owner || !player || !grid || !behavior) return;
 
 	// Chase: Use normal targeting
-	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player, grid, m_Controller);
+	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player.get(), grid, m_Controller);
 	GhostMoveAndAnimate(m_Controller, targetCell);
 }
 
@@ -183,13 +183,13 @@ void dae::GhostChaseState::OnExit()
 void dae::GhostScatterState::Update()
 {
 	auto* owner = m_Controller->GetOwner();
-	auto* player = m_Controller->GetPlayer();
+	auto player = m_Controller->GetPrimaryPlayer();
 	auto* grid = m_Controller->GetGrid();
 	auto* behavior = m_Controller->GetBehavior();
 	if (!owner || !player || !grid || !behavior) return;
 
-	// Chase: Use normal targeting
-	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player, grid, m_Controller);
+	// Scatter: Use normal targeting
+	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player.get(), grid, m_Controller);
 	GhostMoveAndAnimate(m_Controller, targetCell);
 }
 
@@ -217,13 +217,13 @@ void dae::GhostScatterState::OnExit()
 void dae::GhostFrightenedState::Update()
 {
 	auto* owner = m_Controller->GetOwner();
-	auto* player = m_Controller->GetPlayer();
+	auto player = m_Controller->GetPrimaryPlayer();
 	auto* grid = m_Controller->GetGrid();
 	auto* behavior = m_Controller->GetBehavior();
 	if (!owner || !player || !grid || !behavior) return;
 
-	// Chase: Use normal targeting
-	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player, grid, m_Controller);
+	// Frightened: Use normal targeting
+	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player.get(), grid, m_Controller);
 	GhostMoveAndAnimate(m_Controller, targetCell);
 
 	m_Controller->SetCurrentTargetCell(targetCell);
@@ -273,13 +273,13 @@ void dae::GhostFrightenedState::OnExit()
 void dae::GhostEatenState::Update()
 {
 	auto* owner = m_Controller->GetOwner();
-	auto* player = m_Controller->GetPlayer();
+	auto player = m_Controller->GetPrimaryPlayer();
 	auto* grid = m_Controller->GetGrid();
 	auto* behavior = m_Controller->GetBehavior();
 	if (!owner || !player || !grid || !behavior) return;
 
-	// Chase: Use normal targeting
-	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player, grid, m_Controller);
+	// Eaten: Use normal targeting
+	glm::ivec2 targetCell = behavior->GetTargetCell(owner, player.get(), grid, m_Controller);
 	GhostMoveAndAnimate(m_Controller, targetCell);
 }
 
@@ -299,5 +299,52 @@ void dae::GhostEatenState::OnEnter()
 
 void dae::GhostEatenState::OnExit()
 {
+	auto* owner = m_Controller->GetOwner();
+	if (!owner) return;
+	// Reset direction
+	owner->SetIsMoving(false);
 }
 #pragma endregion
+
+void dae::GhostReswpawnState::Update()
+{
+	auto* owner = m_Controller->GetOwner();
+	if (!owner) return;
+
+	// Stop all movement
+	owner->SetDirection(glm::vec3(0.f, 0.f, 0.f));
+
+	if (auto animator = owner->GetComponentPtr<SpriteAnimatorComponent>())
+	{
+		animator->SetCurrentRow(0);
+	}
+}
+
+void dae::GhostReswpawnState::Render() const
+{
+}
+
+void dae::GhostReswpawnState::OnEnter()
+{
+	auto* owner = m_Controller->GetOwner();
+	if (!owner) return;
+
+	if (auto animator = owner->GetComponentPtr<SpriteAnimatorComponent>())
+	{
+		auto* behavior = m_Controller->GetBehavior();
+
+		if (dynamic_cast<BlinkyBehavior*>(behavior))
+			animator->Texture("Blinky.png");
+		else if (dynamic_cast<PinkyBehavior*>(behavior))
+			animator->Texture("Pinky.png");
+		else if (dynamic_cast<InkyBehavior*>(behavior))
+			animator->Texture("Inky.png");
+		else if (dynamic_cast<ClydeBehavior*>(behavior))
+			animator->Texture("Clyde.png");
+	}
+}
+
+void dae::GhostReswpawnState::OnExit()
+{
+}
+

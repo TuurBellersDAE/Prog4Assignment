@@ -28,7 +28,7 @@ namespace dae
 		glm::vec3 m_PendingDirection{ 0.f, 0.f, 0.f };
 		CellType m_LastCellType = CellType::Empty;
 		float m_PelletSoundGraceTimer = 0.0f;
-		const float m_PelletSoundGraceDuration = 0.5f; // seconds, adjust as needed
+		const float m_PelletSoundGraceDuration = 0.5f; 
 		bool m_PelletSoundActive = false;
 
 	};

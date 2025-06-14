@@ -38,16 +38,29 @@
 
 //#include <steam_api.h>
 
+#include "SDLSoundSystem.h"
+#include "ServiceLocator.h"
+
 #include "GameStateManager.h"
 #include "GameState.h"
 
 void load()
 {
+	dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	auto& soundSystem = dae::ServiceLocator::GetInstance().GetSoundSystem();
+	soundSystem.LoadSound("../Data/ms_eat_dot.wav");
+	soundSystem.LoadSound("../Data/ms_death.wav");
+	soundSystem.LoadSound("../Data/SFX/credit.wav");
+
 	// Initialize the game state manager
 	auto& gameStateManager = dae::GameStateManager::GetInstance();
 	// Register the playing state
-	gameStateManager.RegisterState("Playing", std::make_unique<dae::PlayingState>("Playing"));
-	gameStateManager.SetState("Playing");
+	gameStateManager.RegisterState("SinglePlayer", std::make_unique<dae::SinglePlayer>("SinglePlayer"));
+	// Register the menu state
+	gameStateManager.RegisterState("Menu", std::make_unique<dae::MenuState>("Menu"));
+	// Register the multiplayer state
+	gameStateManager.RegisterState("MultiPlayer", std::make_unique<dae::MultiPlayer>("MultiPlayer"));
+	gameStateManager.SetState("Menu");
 	/*dae::ServiceLocator::GetInstance().RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
 	auto& soundSystem = dae::ServiceLocator::GetInstance().GetSoundSystem();
 	soundSystem.LoadSound("../Data/ms_eat_dot.wav");

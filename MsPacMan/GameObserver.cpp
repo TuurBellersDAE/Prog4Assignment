@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include <string>
 #include <iostream>
+#include "GameStateManager.h"
 
 void dae::HealthObserver::OnNotify(const GameObject& gameObject, const Event& event)
 {
@@ -29,9 +30,10 @@ void dae::HealthObserver::OnNotify(const GameObject& gameObject, const Event& ev
 				std::string healthText = "Health: " + std::to_string(healthComponent->GetHealth());
 				textComponent->SetText(healthText);
 			}
+			GameStateManager::GetInstance().GetCurrentState()->Reset();
 			break;
 		case Event::PLAYER_DIED:
-			std::cout << "HealthObserver: Player died\n";
+			GameStateManager::GetInstance().SetState("Menu");
 			break;
 		case Event::PLAYER_SCORED:
 			std::cout << "HealthObserver: Player scored\n";
@@ -59,7 +61,7 @@ void dae::ScoreObserver::OnNotify(const GameObject& gameObject, const Event& eve
 		switch (event)
 		{
 		case Event::PLAYER_SCORED:
-			std::cout << "ScoreObserver: Player scored\n";
+			std::cout << "ScoreObserver: Player scored: "<< scoreComponent->GetScore()<<std::endl;
 			if (textComponent)
 			{
 				std::string scoreText = "Score: " + std::to_string(scoreComponent->GetScore());

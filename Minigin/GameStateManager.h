@@ -22,6 +22,8 @@ namespace dae
 
 		void SetState(const std::string& name)
 		{
+			std::string previousStateName = m_CurrentStateName;
+
 			if (m_CurrentState)
 				m_CurrentState->OnExit();
 
@@ -29,7 +31,9 @@ namespace dae
 			if (it != m_States.end())
 			{
 				m_CurrentState = it->second.get();
-				m_CurrentState->OnEnter();
+				m_CurrentStateName = name;
+
+				m_CurrentState->OnEnter(previousStateName);
 			}
 		}
 
@@ -47,9 +51,12 @@ namespace dae
 
 		FSMBase* GetCurrentState() const { return m_CurrentState; }
 
+
 	private:
 		GameStateManager() = default;
 		std::unordered_map<std::string, std::unique_ptr<FSMBase>> m_States;
 		FSMBase* m_CurrentState{ nullptr };
+		std::string m_CurrentStateName{}; 
 	};
 }
+

@@ -27,6 +27,7 @@ namespace dae
 		virtual void OnEnter() override = 0;
 		virtual void OnExit() override = 0;
 
+		void Reset() override {}
 	protected:
 		GhostAIControllerComponent* m_Controller;
 	};
@@ -40,6 +41,7 @@ namespace dae
 		void Render() const override;
 		void OnEnter() override;
 		void OnExit() override;
+		void Reset() override {}
 	};
 
 	class GhostScatterState : public GhostState
@@ -51,6 +53,7 @@ namespace dae
 		void Render() const override;
 		void OnEnter() override;
 		void OnExit() override;
+		void Reset() override {}
 	};
 
 	class GhostFrightenedState : public GhostState
@@ -62,6 +65,7 @@ namespace dae
 		void Render() const override;
 		void OnEnter() override;
 		void OnExit() override;
+		void Reset() override {}
 	};
 
 	class GhostEatenState : public GhostState
@@ -73,17 +77,19 @@ namespace dae
 		void Render() const override;
 		void OnEnter() override;
 		void OnExit() override;
+		void Reset() override {}
 	};
 
-	class GhostDeadState : public GhostState
+	class GhostReswpawnState : public GhostState
 	{
 	public:
-		explicit GhostDeadState(GhostAIControllerComponent* controller) : GhostState(controller) {}
-		virtual ~GhostDeadState() override = default;
-		void Update() override {}
-		void Render() const override {}
-		void OnEnter() override {}
-		void OnExit() override {}
+		explicit GhostReswpawnState(GhostAIControllerComponent* controller) : GhostState(controller) {}
+		virtual ~GhostReswpawnState() override = default;
+		void Update() override;
+		void Render() const override;
+		void OnEnter() override;
+		void OnExit() override;
+		void Reset() override {}
 	};
 
 }

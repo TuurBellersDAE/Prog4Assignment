@@ -29,8 +29,8 @@ namespace dae
 
 		Subject m_Subject;
 	private:
-		int m_Health{ 100 };
-		int m_MaxHealth{ 100 };
+		int m_Health{ 5 };
+		int m_MaxHealth{ 5 };
 		TextComponent* m_TextComponent;
 
 	};

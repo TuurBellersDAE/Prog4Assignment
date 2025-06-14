@@ -23,7 +23,7 @@ namespace dae
 		if (start.x < 0 || start.x >= w || start.y < 0 || start.y >= h ||
 			goal.x < 0 || goal.x >= w || goal.y < 0 || goal.y >= h)
 		{
-			return {}; // No path if out of bounds
+			return {}; 
 		}
 
 		std::queue<glm::ivec2> frontier;
@@ -58,7 +58,7 @@ namespace dae
 		std::vector<glm::ivec2> path;
 		glm::ivec2 current = goal;
 		if (cameFrom.find(goal) == cameFrom.end())
-			return path; // No path found
+			return path; 
 
 		while (current != start) 
 		{

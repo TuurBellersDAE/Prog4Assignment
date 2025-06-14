@@ -18,14 +18,14 @@ dae::PlayerControllerComponent::PlayerControllerComponent(GameObject* pOwner, in
 	if (pOwner)
 	{
 		// Instead of setting direction directly, set pending direction
-		inputManager.RegisterKeyCommand(SDLK_a, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(-1.f, 0.f, 0.f)));
-		inputManager.RegisterKeyCommand(SDLK_d, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(1.f, 0.f, 0.f)));
-		inputManager.RegisterKeyCommand(SDLK_w, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(0.f, -1.f, 0.f)));
-		inputManager.RegisterKeyCommand(SDLK_s, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(0.f, 1.f, 0.f)));
-
-		inputManager.RegisterKeyCommand(SDLK_z, std::make_unique<dae::ScoreCommand>(pOwner, 10));
-		inputManager.RegisterKeyCommand(SDLK_x, std::make_unique<dae::ScoreCommand>(pOwner, 10));
-		inputManager.RegisterKeyCommand(SDLK_c, std::make_unique<dae::DamageCommand>(pOwner, 10));
+		//inputManager.RegisterKeyCommand(SDLK_a, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(-1.f, 0.f, 0.f)));
+		//inputManager.RegisterKeyCommand(SDLK_d, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(1.f, 0.f, 0.f)));
+		//inputManager.RegisterKeyCommand(SDLK_w, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(0.f, -1.f, 0.f)));
+		//inputManager.RegisterKeyCommand(SDLK_s, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(0.f, 1.f, 0.f)));
+		//
+		//inputManager.RegisterKeyCommand(SDLK_z, std::make_unique<dae::ScoreCommand>(pOwner, 10));
+		//inputManager.RegisterKeyCommand(SDLK_x, std::make_unique<dae::ScoreCommand>(pOwner, 10));
+		//inputManager.RegisterKeyCommand(SDLK_c, std::make_unique<dae::DamageCommand>(pOwner, 10));
 
 		// Controller movement commands for the specified controller ID
 		inputManager.RegisterControllerCommand(controllerId, ControllerButton::DPadLeft, std::make_unique<dae::MoveCommand>(pOwner, glm::vec3(-1.f, 0.f, 0.f)));

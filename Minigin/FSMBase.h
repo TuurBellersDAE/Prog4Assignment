@@ -1,19 +1,18 @@
 #pragma once
+#include <string>
 
 namespace dae
 {
-	class FSMBase
-	{
+	class FSMBase {
 	public:
 		virtual ~FSMBase() = default;
-
 		virtual void Update() = 0;
 		virtual void Render() const = 0;
-
-		virtual void OnEnter() = 0;
+		virtual void OnEnter() {}
+		virtual void OnEnter(const std::string& /*previousState*/) { OnEnter(); }
 		virtual void OnExit() = 0;
-
-	protected:
+		virtual void Reset() = 0;
 	};
+
 }
 

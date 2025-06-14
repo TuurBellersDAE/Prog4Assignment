@@ -1,6 +1,5 @@
 #include "TextComponent.h"
 #include <stdexcept>
-#include <SDL_ttf.h>
 #include "Renderer.h"
 #include "Font.h"
 #include "Texture2D.h"
@@ -21,8 +20,8 @@ void dae::TextComponent::Update()
 {
 	if (m_NeedsUpdate)
 	{
-		const SDL_Color color = { 255,255,255,255 }; // only white text is supported now
-		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), color);
+		// Use m_Color instead of hardcoded white
+		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Color);
 		if (surf == nullptr)
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
@@ -36,6 +35,12 @@ void dae::TextComponent::Update()
 		m_TextTexture = std::make_shared<Texture2D>(texture);
 		m_NeedsUpdate = false;
 	}
+}
+
+void dae::TextComponent::SetColor(const SDL_Color& color)
+{
+	m_Color = color;
+	m_NeedsUpdate = true;
 }
 
 void dae::TextComponent::Render() const
@@ -57,4 +62,18 @@ void dae::TextComponent::SetPosition(glm::vec3 position)
 {
 	GetOwner()->SetWorldPosition(position);
 	m_NeedsUpdate = true;
+}
+
+int dae::TextComponent::GetTextWidth() const
+{
+	if (m_TextTexture)
+		return m_TextTexture->GetSize().x;
+	return 0;
+}
+
+int dae::TextComponent::GetTextHeight() const
+{
+	if (m_TextTexture)
+		return m_TextTexture->GetSize().y;
+	return 0;
 }

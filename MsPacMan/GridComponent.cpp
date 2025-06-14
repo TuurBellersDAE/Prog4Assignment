@@ -21,7 +21,6 @@ dae::GridComponent::GridComponent(GameObject* pOwner)
 
 dae::GridComponent::~GridComponent()
 {
-	// Do not call TTF_Quit here, as it should be called once at program exit
 }
 
 void dae::GridComponent::Update()

@@ -4,7 +4,7 @@
 
 dae::HealthComponent::HealthComponent(GameObject* pOwner)
 	: Component(pOwner)
-	, m_Health(100)
+	, m_Health(5)
 	, m_TextComponent(nullptr)
 {
 }

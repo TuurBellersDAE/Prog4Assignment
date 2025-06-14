@@ -55,7 +55,6 @@ std::shared_ptr<dae::Scene> dae::SceneManager::CreateScene(const std::string& na
 	return scene;
 }
 
-
 std::shared_ptr<dae::Scene> dae::SceneManager::GetActiveScene() const
 {
 	if (!m_pActiveScene)
@@ -79,9 +78,6 @@ std::shared_ptr<dae::Scene> dae::SceneManager::GetScene(const std::string& name)
 
 void dae::SceneManager::SetActiveScene(const std::string& name)
 {
-	if (m_pActiveScene) {
-		m_pActiveScene->RemoveAll(); // Unload previous scene's resources
-	}
 	for (const auto& scene : m_scenes)
 	{
 		if (scene->GetName() == name)

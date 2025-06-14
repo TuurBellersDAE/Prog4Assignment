@@ -9,7 +9,6 @@ void dae::PowerPelletEatenComponent::OnNotify(const GameObject& gameObject, cons
 {
 	if (event == Event::GHOST_FRIGHTENED)
 	{
-		// Notify observers that a power pellet has been eaten
 		m_Subject.Notify(gameObject, event);
 	}
 }
